@@ -3,14 +3,14 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 platform :ios, '10.0'
 
-target 'speechToText' do
+target 'Speech2Text' do
   config = use_native_modules!
 
   use_react_native!(:path => config["reactNativePath"])
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
-  target 'speechToTextTests' do
+  target 'Speech2TextTests' do
     inherit! :complete
     # Pods for testing
   end
@@ -25,10 +25,10 @@ target 'speechToText' do
   end
 end
 
-target 'speechToText-tvOS' do
-  # Pods for speechToText-tvOS
+target 'Speech2Text-tvOS' do
+  # Pods for Speech2Text-tvOS
 
-  target 'speechToText-tvOSTests' do
+  target 'Speech2Text-tvOSTests' do
     inherit! :search_paths
     # Pods for testing
   end

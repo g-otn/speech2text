@@ -1,4 +1,4 @@
-package com.speechtotext;
+package br.com.gotn.speechtotextpoc;
 
 import com.facebook.react.ReactActivity;
 
@@ -10,6 +10,6 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "speechToText";
+    return "Speech2Text";
   }
 }

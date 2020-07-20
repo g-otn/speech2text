@@ -129,7 +129,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.speechtotext"
+        applicationId "br.com.gotn.speechtotextpoc"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
