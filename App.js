@@ -9,9 +9,11 @@ import {
   Button,
   Switch,
   Linking,
+  useWindowDimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Picker } from '@react-native-community/picker';
+const languages = require('./languages.json');
 
 // import { google } from '@google-cloud/speech/build/protos/protos';
 // google.cloud.speech.v1.RecognitionConfig.AudioEncoding.
@@ -20,9 +22,11 @@ const App = () => {
   const [languageCode, setLanguageCode] = useState('pt-BR');
   const [profanityFilter, setProfanityFilter] = useState(false);
   const [wordTimeOffset, setWordTimeOffset] = useState(false);
-  const [automaticPunctuation, setAutomaticPunctuation] = useState(true);
+  const [automaticPunctuation, setAutomaticPunctuation] = useState(false);
   const [model, setModel] = useState('default');
   const [enhancedModel, setEnhancedModel] = useState(false);
+
+  const languagesPickerItems = languages.map(l => (<Picker.Item key={l.bcp47} label={l.name} value={l.bcp47} />));
 
   return (
     <>
@@ -32,8 +36,10 @@ const App = () => {
           style={styles.scrollView}>
           <View style={styles.body}>
 
+
             <View style={styles.card}>
               <Text style={styles.heading}>Speech source</Text>
+
               <View style={styles.sourceView}>
                 <View style={styles.sourceButtonContainer}>
                   <Icon.Button name='file-audio-o' backgroundColor='#e5ffff' style={styles.sourceButton} color='black' onPress={() => { console.log('a') }}>
@@ -48,16 +54,19 @@ const App = () => {
               </View>
             </View>
 
+
             <View style={styles.card}>
-              <Text style={styles.heading} onPress={() => Linking.openURL('https://cloud.google.com/speech-to-text/docs/reference/rest/v1/RecognitionConfig')} >
-                Options&nbsp;
-              <Icon style={{ fontSize: 20 }} name="external-link" />
-              </Text>
+              <View style={{ alignSelf: 'flex-start' }}>
+                <Text style={styles.heading} onPress={() => Linking.openURL('https://cloud.google.com/speech-to-text/docs/reference/rest/v1/RecognitionConfig')} >
+                  Options&nbsp;<Icon style={{ fontSize: 20 }} name="external-link" />
+                </Text>
+              </View>
+
               <View style={styles.optionsView}>
                 <View style={styles.optionContainer}>
-                  <Text style={styles.label}>Language code</Text>
-                  <Picker style={styles.picker} onValueChange={setLanguageCode} selectedValue={languageCode} mode={"dropdown"}>
-                    <Picker.Item label="pt-BR" value="pt-BR" />
+                  <Text style={styles.label}>Language</Text>
+                  <Picker style={styles.picker} onValueChange={setLanguageCode} selectedValue={languageCode} mode={"dialog"}>
+                    {languagesPickerItems}
                   </Picker>
                 </View>
                 <View style={styles.optionContainer}>
@@ -88,17 +97,21 @@ const App = () => {
               </View>
             </View>
 
+
             <View style={[styles.card, { marginBottom: 20 }]}>
               <Text style={styles.heading}>Response</Text>
+
               <Text style={{ fontSize: 18 }}>Transcript</Text>
               <ScrollView style={styles.resultView}>
                 <Text style={styles.textarea} numberOfLines={1000}>{}</Text>
               </ScrollView>
+
               <Text style={{ fontSize: 18 }}>Body</Text>
               <ScrollView style={styles.resultView}>
                 <Text style={styles.textarea} numberOfLines={1000}>{}</Text>
               </ScrollView>
             </View>
+
 
           </View>
         </ScrollView>
@@ -153,7 +166,7 @@ const styles = StyleSheet.create({
   switch: {
   },
   picker: {
-    flex: 1,
+    flex: 1.3,
     maxHeight: 24,
   },
   labelIcon: {
