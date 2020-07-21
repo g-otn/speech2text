@@ -1,1126 +1,546 @@
 [
     {
-        "bcp47": "af-ZA",
-        "name": "Afrikaans (South Africa)"
+      "bcp47": "af-ZA",
+      "name": "Afrikaans (South Africa)"
     },
     {
-        "bcp47": "af-ZA",
-        "name": "Afrikaans (South Africa)"
+      "bcp47": "sq-AL",
+      "name": "Albanian (Albania)"
     },
     {
-        "bcp47": "sq-AL",
-        "name": "Albanian (Albania)"
+      "bcp47": "am-ET",
+      "name": "Amharic (Ethiopia)"
     },
     {
-        "bcp47": "sq-AL",
-        "name": "Albanian (Albania)"
+      "bcp47": "ar-DZ",
+      "name": "Arabic (Algeria)"
     },
     {
-        "bcp47": "am-ET",
-        "name": "Amharic (Ethiopia)"
+      "bcp47": "ar-BH",
+      "name": "Arabic (Bahrain)"
     },
     {
-        "bcp47": "am-ET",
-        "name": "Amharic (Ethiopia)"
+      "bcp47": "ar-EG",
+      "name": "Arabic (Egypt)"
     },
     {
-        "bcp47": "ar-DZ",
-        "name": "Arabic (Algeria)"
+      "bcp47": "ar-IQ",
+      "name": "Arabic (Iraq)"
     },
     {
-        "bcp47": "ar-DZ",
-        "name": "Arabic (Algeria)"
+      "bcp47": "ar-IL",
+      "name": "Arabic (Israel)"
     },
     {
-        "bcp47": "ar-BH",
-        "name": "Arabic (Bahrain)"
+      "bcp47": "ar-JO",
+      "name": "Arabic (Jordan)"
     },
     {
-        "bcp47": "ar-BH",
-        "name": "Arabic (Bahrain)"
+      "bcp47": "ar-KW",
+      "name": "Arabic (Kuwait)"
     },
     {
-        "bcp47": "ar-EG",
-        "name": "Arabic (Egypt)"
+      "bcp47": "ar-LB",
+      "name": "Arabic (Lebanon)"
     },
     {
-        "bcp47": "ar-EG",
-        "name": "Arabic (Egypt)"
+      "bcp47": "ar-MA",
+      "name": "Arabic (Morocco)"
     },
     {
-        "bcp47": "ar-IQ",
-        "name": "Arabic (Iraq)"
+      "bcp47": "ar-OM",
+      "name": "Arabic (Oman)"
     },
     {
-        "bcp47": "ar-IQ",
-        "name": "Arabic (Iraq)"
+      "bcp47": "ar-QA",
+      "name": "Arabic (Qatar)"
     },
     {
-        "bcp47": "ar-IL",
-        "name": "Arabic (Israel)"
+      "bcp47": "ar-SA",
+      "name": "Arabic (Saudi Arabia)"
     },
     {
-        "bcp47": "ar-IL",
-        "name": "Arabic (Israel)"
+      "bcp47": "ar-PS",
+      "name": "Arabic (State of Palestine)"
     },
     {
-        "bcp47": "ar-JO",
-        "name": "Arabic (Jordan)"
+      "bcp47": "ar-TN",
+      "name": "Arabic (Tunisia)"
     },
     {
-        "bcp47": "ar-JO",
-        "name": "Arabic (Jordan)"
+      "bcp47": "ar-AE",
+      "name": "Arabic (United Arab Emirates)"
     },
     {
-        "bcp47": "ar-KW",
-        "name": "Arabic (Kuwait)"
+      "bcp47": "ar-YE",
+      "name": "Arabic (Yemen)"
     },
     {
-        "bcp47": "ar-KW",
-        "name": "Arabic (Kuwait)"
+      "bcp47": "hy-AM",
+      "name": "Armenian (Armenia)"
     },
     {
-        "bcp47": "ar-LB",
-        "name": "Arabic (Lebanon)"
+      "bcp47": "az-AZ",
+      "name": "Azerbaijani (Azerbaijan)"
     },
     {
-        "bcp47": "ar-LB",
-        "name": "Arabic (Lebanon)"
+      "bcp47": "eu-ES",
+      "name": "Basque (Spain)"
     },
     {
-        "bcp47": "ar-MA",
-        "name": "Arabic (Morocco)"
+      "bcp47": "bn-BD",
+      "name": "Bengali (Bangladesh)"
     },
     {
-        "bcp47": "ar-MA",
-        "name": "Arabic (Morocco)"
+      "bcp47": "bn-IN",
+      "name": "Bengali (India)"
     },
     {
-        "bcp47": "ar-OM",
-        "name": "Arabic (Oman)"
+      "bcp47": "bs-BA",
+      "name": "Bosnian (Bosnia and Herzegovina)"
     },
     {
-        "bcp47": "ar-OM",
-        "name": "Arabic (Oman)"
+      "bcp47": "bg-BG",
+      "name": "Bulgarian (Bulgaria)"
     },
     {
-        "bcp47": "ar-QA",
-        "name": "Arabic (Qatar)"
+      "bcp47": "my-MM",
+      "name": "Burmese (Myanmar)"
     },
     {
-        "bcp47": "ar-QA",
-        "name": "Arabic (Qatar)"
+      "bcp47": "ca-ES",
+      "name": "Catalan (Spain)"
     },
     {
-        "bcp47": "ar-SA",
-        "name": "Arabic (Saudi Arabia)"
+      "bcp47": "yue-Hant-HK",
+      "name": "Chinese, Cantonese (Traditional Hong Kong)"
     },
     {
-        "bcp47": "ar-SA",
-        "name": "Arabic (Saudi Arabia)"
+      "bcp47": " China)",
+      "name": "Chinese, Mandarin (Simplified"
     },
     {
-        "bcp47": "ar-PS",
-        "name": "Arabic (State of Palestine)"
+      "bcp47": " Taiwan)",
+      "name": "Chinese, Mandarin (Traditional"
     },
     {
-        "bcp47": "ar-PS",
-        "name": "Arabic (State of Palestine)"
+      "bcp47": "hr-HR",
+      "name": "Croatian (Croatia)"
     },
     {
-        "bcp47": "ar-TN",
-        "name": "Arabic (Tunisia)"
+      "bcp47": "cs-CZ",
+      "name": "Czech (Czech Republic)"
     },
     {
-        "bcp47": "ar-TN",
-        "name": "Arabic (Tunisia)"
+      "bcp47": "da-DK",
+      "name": "Danish (Denmark)"
     },
     {
-        "bcp47": "ar-AE",
-        "name": "Arabic (United Arab Emirates)"
+      "bcp47": "nl-BE",
+      "name": "Dutch (Belgium)"
     },
     {
-        "bcp47": "ar-AE",
-        "name": "Arabic (United Arab Emirates)"
+      "bcp47": "nl-NL",
+      "name": "Dutch (Netherlands)"
     },
     {
-        "bcp47": "ar-YE",
-        "name": "Arabic (Yemen)"
+      "bcp47": "en-AU",
+      "name": "English (Australia)"
     },
     {
-        "bcp47": "ar-YE",
-        "name": "Arabic (Yemen)"
+      "bcp47": "en-CA",
+      "name": "English (Canada)"
     },
     {
-        "bcp47": "hy-AM",
-        "name": "Armenian (Armenia)"
+      "bcp47": "en-GH",
+      "name": "English (Ghana)"
     },
     {
-        "bcp47": "hy-AM",
-        "name": "Armenian (Armenia)"
+      "bcp47": "en-HK",
+      "name": "English (Hong Kong)"
     },
     {
-        "bcp47": "az-AZ",
-        "name": "Azerbaijani (Azerbaijan)"
+      "bcp47": "en-IN",
+      "name": "English (India)"
     },
     {
-        "bcp47": "az-AZ",
-        "name": "Azerbaijani (Azerbaijan)"
+      "bcp47": "en-IE",
+      "name": "English (Ireland)"
     },
     {
-        "bcp47": "eu-ES",
-        "name": "Basque (Spain)"
+      "bcp47": "en-KE",
+      "name": "English (Kenya)"
     },
     {
-        "bcp47": "eu-ES",
-        "name": "Basque (Spain)"
+      "bcp47": "en-NZ",
+      "name": "English (New Zealand)"
     },
     {
-        "bcp47": "bn-BD",
-        "name": "Bengali (Bangladesh)"
+      "bcp47": "en-NG",
+      "name": "English (Nigeria)"
     },
     {
-        "bcp47": "bn-BD",
-        "name": "Bengali (Bangladesh)"
+      "bcp47": "en-PK",
+      "name": "English (Pakistan)"
     },
     {
-        "bcp47": "bn-IN",
-        "name": "Bengali (India)"
+      "bcp47": "en-PH",
+      "name": "English (Philippines)"
     },
     {
-        "bcp47": "bn-IN",
-        "name": "Bengali (India)"
+      "bcp47": "en-SG",
+      "name": "English (Singapore)"
     },
     {
-        "bcp47": "bs-BA",
-        "name": "Bosnian (Bosnia and Herzegovina)"
+      "bcp47": "en-ZA",
+      "name": "English (South Africa)"
     },
     {
-        "bcp47": "bs-BA",
-        "name": "Bosnian (Bosnia and Herzegovina)"
+      "bcp47": "en-TZ",
+      "name": "English (Tanzania)"
     },
     {
-        "bcp47": "bg-BG",
-        "name": "Bulgarian (Bulgaria)"
+      "bcp47": "en-GB",
+      "name": "English (United Kingdom)"
     },
     {
-        "bcp47": "bg-BG",
-        "name": "Bulgarian (Bulgaria)"
+      "bcp47": "en-US",
+      "name": "English (United States)"
     },
     {
-        "bcp47": "my-MM",
-        "name": "Burmese (Myanmar)"
+      "bcp47": "et-EE",
+      "name": "Estonian (Estonia)"
     },
     {
-        "bcp47": "my-MM",
-        "name": "Burmese (Myanmar)"
+      "bcp47": "fil-PH",
+      "name": "Filipino (Philippines)"
     },
     {
-        "bcp47": "ca-ES",
-        "name": "Catalan (Spain)"
+      "bcp47": "fi-FI",
+      "name": "Finnish (Finland)"
     },
     {
-        "bcp47": "ca-ES",
-        "name": "Catalan (Spain)"
+      "bcp47": "fr-BE",
+      "name": "French (Belgium)"
     },
     {
-        "bcp47": "yue-Hant-HK",
-        "name": "Chinese, Cantonese (Traditional Hong Kong)"
+      "bcp47": "fr-CA",
+      "name": "French (Canada)"
     },
     {
-        "bcp47": "yue-Hant-HK",
-        "name": "Chinese, Cantonese (Traditional Hong Kong)"
+      "bcp47": "fr-FR",
+      "name": "French (France)"
     },
     {
-        "bcp47": " China)",
-        "name": "Chinese, Mandarin (Simplified"
+      "bcp47": "fr-CH",
+      "name": "French (Switzerland)"
     },
     {
-        "bcp47": " China)",
-        "name": "Chinese, Mandarin (Simplified"
+      "bcp47": "gl-ES",
+      "name": "Galician (Spain)"
     },
     {
-        "bcp47": " Taiwan)",
-        "name": "Chinese, Mandarin (Traditional"
+      "bcp47": "ka-GE",
+      "name": "Georgian (Georgia)"
     },
     {
-        "bcp47": " Taiwan)",
-        "name": "Chinese, Mandarin (Traditional"
+      "bcp47": "de-AT",
+      "name": "German (Austria)"
     },
     {
-        "bcp47": "hr-HR",
-        "name": "Croatian (Croatia)"
+      "bcp47": "de-DE",
+      "name": "German (Germany)"
     },
     {
-        "bcp47": "hr-HR",
-        "name": "Croatian (Croatia)"
+      "bcp47": "de-CH",
+      "name": "German (Switzerland)"
     },
     {
-        "bcp47": "cs-CZ",
-        "name": "Czech (Czech Republic)"
+      "bcp47": "el-GR",
+      "name": "Greek (Greece)"
     },
     {
-        "bcp47": "cs-CZ",
-        "name": "Czech (Czech Republic)"
+      "bcp47": "gu-IN",
+      "name": "Gujarati (India)"
     },
     {
-        "bcp47": "da-DK",
-        "name": "Danish (Denmark)"
+      "bcp47": "iw-IL",
+      "name": "Hebrew (Israel)"
     },
     {
-        "bcp47": "da-DK",
-        "name": "Danish (Denmark)"
+      "bcp47": "hi-IN",
+      "name": "Hindi (India)"
     },
     {
-        "bcp47": "nl-BE",
-        "name": "Dutch (Belgium)"
+      "bcp47": "hu-HU",
+      "name": "Hungarian (Hungary)"
     },
     {
-        "bcp47": "nl-BE",
-        "name": "Dutch (Belgium)"
+      "bcp47": "is-IS",
+      "name": "Icelandic (Iceland)"
     },
     {
-        "bcp47": "nl-NL",
-        "name": "Dutch (Netherlands)"
+      "bcp47": "id-ID",
+      "name": "Indonesian (Indonesia)"
     },
     {
-        "bcp47": "nl-NL",
-        "name": "Dutch (Netherlands)"
+      "bcp47": "it-IT",
+      "name": "Italian (Italy)"
     },
     {
-        "bcp47": "en-AU",
-        "name": "English (Australia)"
+      "bcp47": "it-CH",
+      "name": "Italian (Switzerland)"
     },
     {
-        "bcp47": "en-AU",
-        "name": "English (Australia)"
+      "bcp47": "ja-JP",
+      "name": "Japanese (Japan)"
     },
     {
-        "bcp47": "en-CA",
-        "name": "English (Canada)"
+      "bcp47": "jv-ID",
+      "name": "Javanese (Indonesia)"
     },
     {
-        "bcp47": "en-CA",
-        "name": "English (Canada)"
+      "bcp47": "kn-IN",
+      "name": "Kannada (India)"
     },
     {
-        "bcp47": "en-GH",
-        "name": "English (Ghana)"
+      "bcp47": "km-KH",
+      "name": "Khmer (Cambodia)"
     },
     {
-        "bcp47": "en-GH",
-        "name": "English (Ghana)"
+      "bcp47": "ko-KR",
+      "name": "Korean (South Korea)"
     },
     {
-        "bcp47": "en-HK",
-        "name": "English (Hong Kong)"
+      "bcp47": "lo-LA",
+      "name": "Lao (Laos)"
     },
     {
-        "bcp47": "en-HK",
-        "name": "English (Hong Kong)"
+      "bcp47": "lv-LV",
+      "name": "Latvian (Latvia)"
     },
     {
-        "bcp47": "en-IN",
-        "name": "English (India)"
+      "bcp47": "lt-LT",
+      "name": "Lithuanian (Lithuania)"
     },
     {
-        "bcp47": "en-IN",
-        "name": "English (India)"
+      "bcp47": "mk-MK",
+      "name": "Macedonian (North Macedonia)"
     },
     {
-        "bcp47": "en-IE",
-        "name": "English (Ireland)"
+      "bcp47": "ms-MY",
+      "name": "Malay (Malaysia)"
     },
     {
-        "bcp47": "en-IE",
-        "name": "English (Ireland)"
+      "bcp47": "ml-IN",
+      "name": "Malayalam (India)"
     },
     {
-        "bcp47": "en-KE",
-        "name": "English (Kenya)"
+      "bcp47": "mr-IN",
+      "name": "Marathi (India)"
     },
     {
-        "bcp47": "en-KE",
-        "name": "English (Kenya)"
+      "bcp47": "mn-MN",
+      "name": "Mongolian (Mongolia)"
     },
     {
-        "bcp47": "en-NZ",
-        "name": "English (New Zealand)"
+      "bcp47": "ne-NP",
+      "name": "Nepali (Nepal)"
     },
     {
-        "bcp47": "en-NZ",
-        "name": "English (New Zealand)"
+      "bcp47": "no-NO",
+      "name": "Norwegian Bokmål (Norway)"
     },
     {
-        "bcp47": "en-NG",
-        "name": "English (Nigeria)"
+      "bcp47": "fa-IR",
+      "name": "Persian (Iran)"
     },
     {
-        "bcp47": "en-NG",
-        "name": "English (Nigeria)"
+      "bcp47": "pl-PL",
+      "name": "Polish (Poland)"
     },
     {
-        "bcp47": "en-PK",
-        "name": "English (Pakistan)"
+      "bcp47": "pt-BR",
+      "name": "Portuguese (Brazil)"
     },
     {
-        "bcp47": "en-PK",
-        "name": "English (Pakistan)"
+      "bcp47": "pt-PT",
+      "name": "Portuguese (Portugal)"
     },
     {
-        "bcp47": "en-PH",
-        "name": "English (Philippines)"
+      "bcp47": "pa-Guru-IN",
+      "name": "Punjabi (Gurmukhi India)"
     },
     {
-        "bcp47": "en-PH",
-        "name": "English (Philippines)"
+      "bcp47": "ro-RO",
+      "name": "Romanian (Romania)"
     },
     {
-        "bcp47": "en-SG",
-        "name": "English (Singapore)"
+      "bcp47": "ru-RU",
+      "name": "Russian (Russia)"
     },
     {
-        "bcp47": "en-SG",
-        "name": "English (Singapore)"
+      "bcp47": "sr-RS",
+      "name": "Serbian (Serbia)"
     },
     {
-        "bcp47": "en-ZA",
-        "name": "English (South Africa)"
+      "bcp47": "si-LK",
+      "name": "Sinhala (Sri Lanka)"
     },
     {
-        "bcp47": "en-ZA",
-        "name": "English (South Africa)"
+      "bcp47": "sk-SK",
+      "name": "Slovak (Slovakia)"
     },
     {
-        "bcp47": "en-TZ",
-        "name": "English (Tanzania)"
+      "bcp47": "sl-SI",
+      "name": "Slovenian (Slovenia)"
     },
     {
-        "bcp47": "en-TZ",
-        "name": "English (Tanzania)"
+      "bcp47": "es-AR",
+      "name": "Spanish (Argentina)"
     },
     {
-        "bcp47": "en-GB",
-        "name": "English (United Kingdom)"
+      "bcp47": "es-BO",
+      "name": "Spanish (Bolivia)"
     },
     {
-        "bcp47": "en-GB",
-        "name": "English (United Kingdom)"
+      "bcp47": "es-CL",
+      "name": "Spanish (Chile)"
     },
     {
-        "bcp47": "en-GB",
-        "name": "English (United Kingdom)"
+      "bcp47": "es-CO",
+      "name": "Spanish (Colombia)"
     },
     {
-        "bcp47": "en-GB",
-        "name": "English (United Kingdom)"
+      "bcp47": "es-CR",
+      "name": "Spanish (Costa Rica)"
     },
     {
-        "bcp47": "en-US",
-        "name": "English (United States)"
+      "bcp47": "es-DO",
+      "name": "Spanish (Dominican Republic)"
     },
     {
-        "bcp47": "en-US",
-        "name": "English (United States)"
+      "bcp47": "es-EC",
+      "name": "Spanish (Ecuador)"
     },
     {
-        "bcp47": "en-US",
-        "name": "English (United States)"
+      "bcp47": "es-SV",
+      "name": "Spanish (El Salvador)"
     },
     {
-        "bcp47": "en-US",
-        "name": "English (United States)"
+      "bcp47": "es-GT",
+      "name": "Spanish (Guatemala)"
     },
     {
-        "bcp47": "en-US",
-        "name": "English (United States)"
+      "bcp47": "es-HN",
+      "name": "Spanish (Honduras)"
     },
     {
-        "bcp47": "et-EE",
-        "name": "Estonian (Estonia)"
+      "bcp47": "es-MX",
+      "name": "Spanish (Mexico)"
     },
     {
-        "bcp47": "et-EE",
-        "name": "Estonian (Estonia)"
+      "bcp47": "es-NI",
+      "name": "Spanish (Nicaragua)"
     },
     {
-        "bcp47": "fil-PH",
-        "name": "Filipino (Philippines)"
+      "bcp47": "es-PA",
+      "name": "Spanish (Panama)"
     },
     {
-        "bcp47": "fil-PH",
-        "name": "Filipino (Philippines)"
+      "bcp47": "es-PY",
+      "name": "Spanish (Paraguay)"
     },
     {
-        "bcp47": "fi-FI",
-        "name": "Finnish (Finland)"
+      "bcp47": "es-PE",
+      "name": "Spanish (Peru)"
     },
     {
-        "bcp47": "fi-FI",
-        "name": "Finnish (Finland)"
+      "bcp47": "es-PR",
+      "name": "Spanish (Puerto Rico)"
     },
     {
-        "bcp47": "fr-BE",
-        "name": "French (Belgium)"
+      "bcp47": "es-ES",
+      "name": "Spanish (Spain)"
     },
     {
-        "bcp47": "fr-BE",
-        "name": "French (Belgium)"
+      "bcp47": "es-US",
+      "name": "Spanish (United States)"
     },
     {
-        "bcp47": "fr-CA",
-        "name": "French (Canada)"
+      "bcp47": "es-UY",
+      "name": "Spanish (Uruguay)"
     },
     {
-        "bcp47": "fr-CA",
-        "name": "French (Canada)"
+      "bcp47": "es-VE",
+      "name": "Spanish (Venezuela)"
     },
     {
-        "bcp47": "fr-FR",
-        "name": "French (France)"
+      "bcp47": "su-ID",
+      "name": "Sundanese (Indonesia)"
     },
     {
-        "bcp47": "fr-FR",
-        "name": "French (France)"
+      "bcp47": "sw-KE",
+      "name": "Swahili (Kenya)"
     },
     {
-        "bcp47": "fr-CH",
-        "name": "French (Switzerland)"
+      "bcp47": "sw-TZ",
+      "name": "Swahili (Tanzania)"
     },
     {
-        "bcp47": "fr-CH",
-        "name": "French (Switzerland)"
+      "bcp47": "sv-SE",
+      "name": "Swedish (Sweden)"
     },
     {
-        "bcp47": "gl-ES",
-        "name": "Galician (Spain)"
+      "bcp47": "ta-IN",
+      "name": "Tamil (India)"
     },
     {
-        "bcp47": "gl-ES",
-        "name": "Galician (Spain)"
+      "bcp47": "ta-MY",
+      "name": "Tamil (Malaysia)"
     },
     {
-        "bcp47": "ka-GE",
-        "name": "Georgian (Georgia)"
+      "bcp47": "ta-SG",
+      "name": "Tamil (Singapore)"
     },
     {
-        "bcp47": "ka-GE",
-        "name": "Georgian (Georgia)"
+      "bcp47": "ta-LK",
+      "name": "Tamil (Sri Lanka)"
     },
     {
-        "bcp47": "de-AT",
-        "name": "German (Austria)"
+      "bcp47": "te-IN",
+      "name": "Telugu (India)"
     },
     {
-        "bcp47": "de-AT",
-        "name": "German (Austria)"
+      "bcp47": "th-TH",
+      "name": "Thai (Thailand)"
     },
     {
-        "bcp47": "de-DE",
-        "name": "German (Germany)"
+      "bcp47": "tr-TR",
+      "name": "Turkish (Turkey)"
     },
     {
-        "bcp47": "de-DE",
-        "name": "German (Germany)"
+      "bcp47": "uk-UA",
+      "name": "Ukrainian (Ukraine)"
     },
     {
-        "bcp47": "de-CH",
-        "name": "German (Switzerland)"
+      "bcp47": "ur-IN",
+      "name": "Urdu (India)"
     },
     {
-        "bcp47": "de-CH",
-        "name": "German (Switzerland)"
+      "bcp47": "ur-PK",
+      "name": "Urdu (Pakistan)"
     },
     {
-        "bcp47": "el-GR",
-        "name": "Greek (Greece)"
+      "bcp47": "uz-UZ",
+      "name": "Uzbek (Uzbekistan)"
     },
     {
-        "bcp47": "el-GR",
-        "name": "Greek (Greece)"
+      "bcp47": "vi-VN",
+      "name": "Vietnamese (Vietnam)"
     },
     {
-        "bcp47": "gu-IN",
-        "name": "Gujarati (India)"
-    },
-    {
-        "bcp47": "gu-IN",
-        "name": "Gujarati (India)"
-    },
-    {
-        "bcp47": "iw-IL",
-        "name": "Hebrew (Israel)"
-    },
-    {
-        "bcp47": "iw-IL",
-        "name": "Hebrew (Israel)"
-    },
-    {
-        "bcp47": "hi-IN",
-        "name": "Hindi (India)"
-    },
-    {
-        "bcp47": "hi-IN",
-        "name": "Hindi (India)"
-    },
-    {
-        "bcp47": "hu-HU",
-        "name": "Hungarian (Hungary)"
-    },
-    {
-        "bcp47": "hu-HU",
-        "name": "Hungarian (Hungary)"
-    },
-    {
-        "bcp47": "is-IS",
-        "name": "Icelandic (Iceland)"
-    },
-    {
-        "bcp47": "is-IS",
-        "name": "Icelandic (Iceland)"
-    },
-    {
-        "bcp47": "id-ID",
-        "name": "Indonesian (Indonesia)"
-    },
-    {
-        "bcp47": "id-ID",
-        "name": "Indonesian (Indonesia)"
-    },
-    {
-        "bcp47": "it-IT",
-        "name": "Italian (Italy)"
-    },
-    {
-        "bcp47": "it-IT",
-        "name": "Italian (Italy)"
-    },
-    {
-        "bcp47": "it-CH",
-        "name": "Italian (Switzerland)"
-    },
-    {
-        "bcp47": "it-CH",
-        "name": "Italian (Switzerland)"
-    },
-    {
-        "bcp47": "ja-JP",
-        "name": "Japanese (Japan)"
-    },
-    {
-        "bcp47": "ja-JP",
-        "name": "Japanese (Japan)"
-    },
-    {
-        "bcp47": "jv-ID",
-        "name": "Javanese (Indonesia)"
-    },
-    {
-        "bcp47": "jv-ID",
-        "name": "Javanese (Indonesia)"
-    },
-    {
-        "bcp47": "kn-IN",
-        "name": "Kannada (India)"
-    },
-    {
-        "bcp47": "kn-IN",
-        "name": "Kannada (India)"
-    },
-    {
-        "bcp47": "km-KH",
-        "name": "Khmer (Cambodia)"
-    },
-    {
-        "bcp47": "km-KH",
-        "name": "Khmer (Cambodia)"
-    },
-    {
-        "bcp47": "ko-KR",
-        "name": "Korean (South Korea)"
-    },
-    {
-        "bcp47": "ko-KR",
-        "name": "Korean (South Korea)"
-    },
-    {
-        "bcp47": "lo-LA",
-        "name": "Lao (Laos)"
-    },
-    {
-        "bcp47": "lo-LA",
-        "name": "Lao (Laos)"
-    },
-    {
-        "bcp47": "lv-LV",
-        "name": "Latvian (Latvia)"
-    },
-    {
-        "bcp47": "lv-LV",
-        "name": "Latvian (Latvia)"
-    },
-    {
-        "bcp47": "lt-LT",
-        "name": "Lithuanian (Lithuania)"
-    },
-    {
-        "bcp47": "lt-LT",
-        "name": "Lithuanian (Lithuania)"
-    },
-    {
-        "bcp47": "mk-MK",
-        "name": "Macedonian (North Macedonia)"
-    },
-    {
-        "bcp47": "mk-MK",
-        "name": "Macedonian (North Macedonia)"
-    },
-    {
-        "bcp47": "ms-MY",
-        "name": "Malay (Malaysia)"
-    },
-    {
-        "bcp47": "ms-MY",
-        "name": "Malay (Malaysia)"
-    },
-    {
-        "bcp47": "ml-IN",
-        "name": "Malayalam (India)"
-    },
-    {
-        "bcp47": "ml-IN",
-        "name": "Malayalam (India)"
-    },
-    {
-        "bcp47": "mr-IN",
-        "name": "Marathi (India)"
-    },
-    {
-        "bcp47": "mr-IN",
-        "name": "Marathi (India)"
-    },
-    {
-        "bcp47": "mn-MN",
-        "name": "Mongolian (Mongolia)"
-    },
-    {
-        "bcp47": "mn-MN",
-        "name": "Mongolian (Mongolia)"
-    },
-    {
-        "bcp47": "ne-NP",
-        "name": "Nepali (Nepal)"
-    },
-    {
-        "bcp47": "ne-NP",
-        "name": "Nepali (Nepal)"
-    },
-    {
-        "bcp47": "no-NO",
-        "name": "Norwegian Bokmål (Norway)"
-    },
-    {
-        "bcp47": "no-NO",
-        "name": "Norwegian Bokmål (Norway)"
-    },
-    {
-        "bcp47": "fa-IR",
-        "name": "Persian (Iran)"
-    },
-    {
-        "bcp47": "fa-IR",
-        "name": "Persian (Iran)"
-    },
-    {
-        "bcp47": "pl-PL",
-        "name": "Polish (Poland)"
-    },
-    {
-        "bcp47": "pl-PL",
-        "name": "Polish (Poland)"
-    },
-    {
-        "bcp47": "pt-BR",
-        "name": "Portuguese (Brazil)"
-    },
-    {
-        "bcp47": "pt-BR",
-        "name": "Portuguese (Brazil)"
-    },
-    {
-        "bcp47": "pt-PT",
-        "name": "Portuguese (Portugal)"
-    },
-    {
-        "bcp47": "pt-PT",
-        "name": "Portuguese (Portugal)"
-    },
-    {
-        "bcp47": "pa-Guru-IN",
-        "name": "Punjabi (Gurmukhi India)"
-    },
-    {
-        "bcp47": "pa-Guru-IN",
-        "name": "Punjabi (Gurmukhi India)"
-    },
-    {
-        "bcp47": "ro-RO",
-        "name": "Romanian (Romania)"
-    },
-    {
-        "bcp47": "ro-RO",
-        "name": "Romanian (Romania)"
-    },
-    {
-        "bcp47": "ru-RU",
-        "name": "Russian (Russia)"
-    },
-    {
-        "bcp47": "ru-RU",
-        "name": "Russian (Russia)"
-    },
-    {
-        "bcp47": "ru-RU",
-        "name": "Russian (Russia)"
-    },
-    {
-        "bcp47": "ru-RU",
-        "name": "Russian (Russia)"
-    },
-    {
-        "bcp47": "sr-RS",
-        "name": "Serbian (Serbia)"
-    },
-    {
-        "bcp47": "sr-RS",
-        "name": "Serbian (Serbia)"
-    },
-    {
-        "bcp47": "si-LK",
-        "name": "Sinhala (Sri Lanka)"
-    },
-    {
-        "bcp47": "si-LK",
-        "name": "Sinhala (Sri Lanka)"
-    },
-    {
-        "bcp47": "sk-SK",
-        "name": "Slovak (Slovakia)"
-    },
-    {
-        "bcp47": "sk-SK",
-        "name": "Slovak (Slovakia)"
-    },
-    {
-        "bcp47": "sl-SI",
-        "name": "Slovenian (Slovenia)"
-    },
-    {
-        "bcp47": "sl-SI",
-        "name": "Slovenian (Slovenia)"
-    },
-    {
-        "bcp47": "es-AR",
-        "name": "Spanish (Argentina)"
-    },
-    {
-        "bcp47": "es-AR",
-        "name": "Spanish (Argentina)"
-    },
-    {
-        "bcp47": "es-BO",
-        "name": "Spanish (Bolivia)"
-    },
-    {
-        "bcp47": "es-BO",
-        "name": "Spanish (Bolivia)"
-    },
-    {
-        "bcp47": "es-CL",
-        "name": "Spanish (Chile)"
-    },
-    {
-        "bcp47": "es-CL",
-        "name": "Spanish (Chile)"
-    },
-    {
-        "bcp47": "es-CO",
-        "name": "Spanish (Colombia)"
-    },
-    {
-        "bcp47": "es-CO",
-        "name": "Spanish (Colombia)"
-    },
-    {
-        "bcp47": "es-CR",
-        "name": "Spanish (Costa Rica)"
-    },
-    {
-        "bcp47": "es-CR",
-        "name": "Spanish (Costa Rica)"
-    },
-    {
-        "bcp47": "es-DO",
-        "name": "Spanish (Dominican Republic)"
-    },
-    {
-        "bcp47": "es-DO",
-        "name": "Spanish (Dominican Republic)"
-    },
-    {
-        "bcp47": "es-EC",
-        "name": "Spanish (Ecuador)"
-    },
-    {
-        "bcp47": "es-EC",
-        "name": "Spanish (Ecuador)"
-    },
-    {
-        "bcp47": "es-SV",
-        "name": "Spanish (El Salvador)"
-    },
-    {
-        "bcp47": "es-SV",
-        "name": "Spanish (El Salvador)"
-    },
-    {
-        "bcp47": "es-GT",
-        "name": "Spanish (Guatemala)"
-    },
-    {
-        "bcp47": "es-GT",
-        "name": "Spanish (Guatemala)"
-    },
-    {
-        "bcp47": "es-HN",
-        "name": "Spanish (Honduras)"
-    },
-    {
-        "bcp47": "es-HN",
-        "name": "Spanish (Honduras)"
-    },
-    {
-        "bcp47": "es-MX",
-        "name": "Spanish (Mexico)"
-    },
-    {
-        "bcp47": "es-MX",
-        "name": "Spanish (Mexico)"
-    },
-    {
-        "bcp47": "es-NI",
-        "name": "Spanish (Nicaragua)"
-    },
-    {
-        "bcp47": "es-NI",
-        "name": "Spanish (Nicaragua)"
-    },
-    {
-        "bcp47": "es-PA",
-        "name": "Spanish (Panama)"
-    },
-    {
-        "bcp47": "es-PA",
-        "name": "Spanish (Panama)"
-    },
-    {
-        "bcp47": "es-PY",
-        "name": "Spanish (Paraguay)"
-    },
-    {
-        "bcp47": "es-PY",
-        "name": "Spanish (Paraguay)"
-    },
-    {
-        "bcp47": "es-PE",
-        "name": "Spanish (Peru)"
-    },
-    {
-        "bcp47": "es-PE",
-        "name": "Spanish (Peru)"
-    },
-    {
-        "bcp47": "es-PR",
-        "name": "Spanish (Puerto Rico)"
-    },
-    {
-        "bcp47": "es-PR",
-        "name": "Spanish (Puerto Rico)"
-    },
-    {
-        "bcp47": "es-ES",
-        "name": "Spanish (Spain)"
-    },
-    {
-        "bcp47": "es-ES",
-        "name": "Spanish (Spain)"
-    },
-    {
-        "bcp47": "es-US",
-        "name": "Spanish (United States)"
-    },
-    {
-        "bcp47": "es-US",
-        "name": "Spanish (United States)"
-    },
-    {
-        "bcp47": "es-US",
-        "name": "Spanish (United States)"
-    },
-    {
-        "bcp47": "es-US",
-        "name": "Spanish (United States)"
-    },
-    {
-        "bcp47": "es-UY",
-        "name": "Spanish (Uruguay)"
-    },
-    {
-        "bcp47": "es-UY",
-        "name": "Spanish (Uruguay)"
-    },
-    {
-        "bcp47": "es-VE",
-        "name": "Spanish (Venezuela)"
-    },
-    {
-        "bcp47": "es-VE",
-        "name": "Spanish (Venezuela)"
-    },
-    {
-        "bcp47": "su-ID",
-        "name": "Sundanese (Indonesia)"
-    },
-    {
-        "bcp47": "su-ID",
-        "name": "Sundanese (Indonesia)"
-    },
-    {
-        "bcp47": "sw-KE",
-        "name": "Swahili (Kenya)"
-    },
-    {
-        "bcp47": "sw-KE",
-        "name": "Swahili (Kenya)"
-    },
-    {
-        "bcp47": "sw-TZ",
-        "name": "Swahili (Tanzania)"
-    },
-    {
-        "bcp47": "sw-TZ",
-        "name": "Swahili (Tanzania)"
-    },
-    {
-        "bcp47": "sv-SE",
-        "name": "Swedish (Sweden)"
-    },
-    {
-        "bcp47": "sv-SE",
-        "name": "Swedish (Sweden)"
-    },
-    {
-        "bcp47": "ta-IN",
-        "name": "Tamil (India)"
-    },
-    {
-        "bcp47": "ta-IN",
-        "name": "Tamil (India)"
-    },
-    {
-        "bcp47": "ta-MY",
-        "name": "Tamil (Malaysia)"
-    },
-    {
-        "bcp47": "ta-MY",
-        "name": "Tamil (Malaysia)"
-    },
-    {
-        "bcp47": "ta-SG",
-        "name": "Tamil (Singapore)"
-    },
-    {
-        "bcp47": "ta-SG",
-        "name": "Tamil (Singapore)"
-    },
-    {
-        "bcp47": "ta-LK",
-        "name": "Tamil (Sri Lanka)"
-    },
-    {
-        "bcp47": "ta-LK",
-        "name": "Tamil (Sri Lanka)"
-    },
-    {
-        "bcp47": "te-IN",
-        "name": "Telugu (India)"
-    },
-    {
-        "bcp47": "te-IN",
-        "name": "Telugu (India)"
-    },
-    {
-        "bcp47": "th-TH",
-        "name": "Thai (Thailand)"
-    },
-    {
-        "bcp47": "th-TH",
-        "name": "Thai (Thailand)"
-    },
-    {
-        "bcp47": "tr-TR",
-        "name": "Turkish (Turkey)"
-    },
-    {
-        "bcp47": "tr-TR",
-        "name": "Turkish (Turkey)"
-    },
-    {
-        "bcp47": "uk-UA",
-        "name": "Ukrainian (Ukraine)"
-    },
-    {
-        "bcp47": "uk-UA",
-        "name": "Ukrainian (Ukraine)"
-    },
-    {
-        "bcp47": "ur-IN",
-        "name": "Urdu (India)"
-    },
-    {
-        "bcp47": "ur-IN",
-        "name": "Urdu (India)"
-    },
-    {
-        "bcp47": "ur-PK",
-        "name": "Urdu (Pakistan)"
-    },
-    {
-        "bcp47": "ur-PK",
-        "name": "Urdu (Pakistan)"
-    },
-    {
-        "bcp47": "uz-UZ",
-        "name": "Uzbek (Uzbekistan)"
-    },
-    {
-        "bcp47": "uz-UZ",
-        "name": "Uzbek (Uzbekistan)"
-    },
-    {
-        "bcp47": "vi-VN",
-        "name": "Vietnamese (Vietnam)"
-    },
-    {
-        "bcp47": "vi-VN",
-        "name": "Vietnamese (Vietnam)"
-    },
-    {
-        "bcp47": "zu-ZA",
-        "name": "Zulu (South Africa)"
-    },
-    {
-        "bcp47": "zu-ZA",
-        "name": "Zulu (South Africa)"
+      "bcp47": "zu-ZA",
+      "name": "Zulu (South Africa)"
     }
 ]
