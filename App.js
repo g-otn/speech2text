@@ -30,11 +30,9 @@ const App = () => {
 
   return (
     <>
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <View style={styles.body}>
+      <SafeAreaView style={styles.safeAreaView}>
+        <ScrollView contentContainerStyle={styles.scrollView}>
+          <View>
 
 
             <View style={styles.card}>
@@ -121,11 +119,12 @@ const App = () => {
 };
 
 const styles = StyleSheet.create({
+  safeAreaView: {
+    backgroundColor: '#82ada9',
+    flex: 1,
+  },
   scrollView: {
     padding: 10,
-    backgroundColor: '#82ada9',
-  },
-  body: {
   },
   card: {
     borderRadius: 15,
