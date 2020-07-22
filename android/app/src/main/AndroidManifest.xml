@@ -1,7 +1,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="br.com.gotn.speechtotextpoc">
 
+    <!-- If you want to play audio from a SD card (i.e. external storage),
+         you need to add this permission -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!-- If you want to play audio from a URL, you need to add these permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- If you want to record audio, you need to add this permission -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- If you want to record audio to a SD card (i.e. external storage),
+         you need to add this permission -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
       android:name=".MainApplication"
