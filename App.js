@@ -9,12 +9,15 @@ import {
   Linking,
   Platform,
   PermissionsAndroid,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Picker } from '@react-native-community/picker';
 const languages = require('./languages.json');
 
 import { google } from '@google-cloud/speech/build/protos/protos';
+import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import DocumentPicker from 'react-native-document-picker';
 
 export default class App extends Component {
 
@@ -39,34 +42,53 @@ export default class App extends Component {
     }
   }
 
-  // https://github.com/react-native-community/react-native-audio-toolkit/blob/0a2e315d168df1cb02e93d19b98fff5106976882/ExampleApp/src/App.js#L205
-  async requestRecordAudioPermission() {
-    if (Platform.OS !== 'android') {
-      return true;
+  async requestReadStoragePermission() {
+    if (Platform.OS !== "android") return RESULTS.UNAVAILABLE;
+    return await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+  }
+
+  async requestMicrophonePermission() {
+    return await request(
+      Platform.select({
+        android: PERMISSIONS.ANDROID.RECORD_AUDIO,
+        ios: PERMISSIONS.IOS.MICROPHONE,
+      })
+    );
+  }
+
+  async selectFile() {
+    // Request permission
+    const permission = await this.requestReadStoragePermission();
+    if (permission !== RESULTS.GRANTED) {
+      return;
     }
 
+    // Select file
+    let fileMetadata = {};
     try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-        {
-          title: 'Microphone Permission',
-          message: 'Speech2Text needs access to your microphone to record the speech audio.',
-        },
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        return true;
-      } else {
-        return false;
-      }
+      fileMetadata = await DocumentPicker.pick({
+        type: [DocumentPicker.types.audio],
+      });
     } catch (err) {
-      console.error(err);
-      return false;
+      console.error(err)
+      return;
     }
+
+    // Read file
+    Alert.alert('File', JSON.stringify(fileMetadata, null, '\t\t'))
   }
 
-  test() {
-    console.log(this.state)
+  async recordVoice() {
+    // Request permission
+    const permission = await this.requestMicrophonePermission();
+    console.log(permission)
+    if (permission !== RESULTS.GRANTED) {
+      return;
+    }
+
+    // Start recording
   }
+
 
   render() {
     return (
@@ -74,29 +96,29 @@ export default class App extends Component {
         <SafeAreaView style={styles.safeAreaView}>
           <ScrollView contentContainerStyle={styles.scrollView}>
             <View>
-  
-  
+
+
               <View style={styles.card}>
                 <Text style={styles.heading}>Speech audio</Text>
-  
+
                 <Text style={{ fontSize: 20 }}>Source</Text>
                 <View style={styles.sourceView}>
                   <View style={styles.sourceButtonContainer}>
-                    <Icon.Button name='file-audio-o' backgroundColor='#e5ffff' style={styles.sourceButton} color='black' onPress={() => {}}>
+                    <Icon.Button name='file-audio-o' backgroundColor='#e5ffff' style={styles.sourceButton} color='black' onPress={this.selectFile.bind(this)}>
                       <Text style={styles.buttonText}>Select file</Text>
                     </Icon.Button>
                   </View>
                   <View style={styles.sourceButtonContainer}>
-                    <Icon.Button name='microphone' backgroundColor='#e5ffff' color='black' onPress={() => { this.test() }}>
+                    <Icon.Button name='microphone' backgroundColor='#e5ffff' color='black' onPress={this.recordVoice.bind(this)}>
                       <Text style={styles.buttonText}>Record voice</Text>
                     </Icon.Button>
                   </View>
                 </View>
-  
+
                 <View style={styles.sourceView}>
-                  
+
                 </View>
-  
+
                 <Text style={styles.sectionTitle}>File metadata</Text>
                 <View style={styles.optionsView}>
                   <View style={styles.optionContainer}>
@@ -128,17 +150,17 @@ export default class App extends Component {
                     <Text style={styles.textValue}></Text>
                   </View>
                 </View>
-                
+
               </View>
-  
-  
+
+
               <View style={styles.card}>
                 <View style={{ alignSelf: 'flex-start' }}>
                   <Text style={styles.heading} onPress={() => Linking.openURL('https://cloud.google.com/speech-to-text/docs/reference/rest/v1p1beta1/RecognitionConfig')} >
                     Options&nbsp;<Icon style={{ fontSize: 20 }} name="external-link" />
                   </Text>
                 </View>
-  
+
                 <Text style={styles.sectionTitle}>Main options</Text>
                 <View style={styles.optionsView}>
                   <View style={styles.optionContainer}>
@@ -165,7 +187,7 @@ export default class App extends Component {
                   </View>
                   <View style={styles.optionContainer}>
                     <Text style={styles.label}>Model</Text>
-                    <Picker style={styles.picker} onValueChange={model => this.setState=({ model })} selectedValue={this.state.model} mode={"dropdown"}>
+                    <Picker style={styles.picker} onValueChange={model => this.setState = ({ model })} selectedValue={this.state.model} mode={"dropdown"}>
                       <Picker.Item label="Default" value="default" />
                       <Picker.Item label="Command and search" value="command_and_search" />
                       <Picker.Item label="Phone call" value="phone_call" />
@@ -177,31 +199,31 @@ export default class App extends Component {
                     <Switch style={styles.switch} onValueChange={enhancedModel => this.setState({ enhancedModel })} value={this.state.enhancedModel} />
                   </View>
                 </View>
-  
+
                 {/* <Text style={styles.sectionTitle}>Recognition metadata</Text>
                 <View style={styles.optionsView}>
                 </View> */}
-  
-                <Icon.Button name='cloud-upload' backgroundColor='#e5ffff' style={styles.sourceButton} color='black' onPress={() => {}} disabled={true}>
+
+                <Icon.Button name='cloud-upload' backgroundColor='#e5ffff' style={styles.sourceButton} color='black' onPress={() => { }} disabled={true}>
                   <Text style={styles.buttonText}>Send audio</Text>
                 </Icon.Button>
               </View>
-  
+
               <View style={[styles.card, { marginBottom: 20 }]}>
                 <Text style={styles.heading}>Response</Text>
-  
+
                 <Text style={styles.sectionTitle}>Transcript</Text>
                 <ScrollView style={styles.resultView}>
                   <Text style={styles.textarea} numberOfLines={1000}>{}</Text>
                 </ScrollView>
-  
+
                 <Text style={styles.sectionTitle}>Body</Text>
                 <ScrollView style={styles.resultView}>
                   <Text style={styles.textarea} numberOfLines={1000}>{}</Text>
                 </ScrollView>
               </View>
-  
-  
+
+
             </View>
           </ScrollView>
         </SafeAreaView>
