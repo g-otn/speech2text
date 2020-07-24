@@ -13,13 +13,14 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Picker } from '@react-native-community/picker';
 
-import { google } from '@google-cloud/speech/build/protos/protos';
 import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import DocumentPicker from 'react-native-document-picker';
 
 export default class App extends Component {
 
   recorder;
+  
+  isAndroid = Platform.OS === 'android'
   languagesPickerItems = require('./data/languages.json').map(l => (<Picker.Item key={l.bcp47} label={l.name} value={l.bcp47} />));
 
   constructor(props) {
@@ -27,9 +28,8 @@ export default class App extends Component {
 
     this.state = {
       // Metadata
-      encoding: google.cloud.speech.v1p1beta1.RecognitionConfig.AudioEncoding.MP3,
-      bitrate: 256000,
-      sampleRateHertz: 44100,
+      format: this.isAndroid ? 'amr' : 'm4a',
+      convertInServer: true,
       
 
       // Main Options
@@ -43,8 +43,32 @@ export default class App extends Component {
     }
   }
 
+  getAvailableFormats() {
+    let availableFormats = []
+
+    if (this.state.convertInServer) {
+      availableFormats.push(
+        { value: 'mp4', label: 'm4a' },
+        { value: 'aac', label: 'aac' },
+      )
+      if (this.isAndroid) {
+        availableFormats.push(
+          { value: 'ogg', label: 'ogg' },
+          { value: 'webm', label: 'webm' },
+          { value: 'amr', label: 'amr' },
+        )
+      }
+    } else if (this.isAndroid) {
+      availableFormats.push(
+        { value: 'amr', label: 'amr' },
+      )
+    } // iOS must convert in server, no accepted formats by the API available in Recorder
+
+    return availableFormats;
+  }
+
   async requestReadStoragePermission() {
-    if (Platform.OS !== "android") return RESULTS.UNAVAILABLE;
+    if (!this.isAndroid) return RESULTS.UNAVAILABLE;
     return await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
   }
 
@@ -57,7 +81,7 @@ export default class App extends Component {
     );
   }
 
-  async selectFile() {
+  async selectFile() { // Android only
     // Request permission
     const permission = await this.requestReadStoragePermission();
     if (permission !== RESULTS.GRANTED) {
@@ -76,7 +100,7 @@ export default class App extends Component {
       return;
     }
 
-    this.setState({ encoding: 'AMR' })
+    this.setState({ format: 'amr' })
     Alert.alert('File', JSON.stringify(fileMetadata, null, '\t\t'))
   }
 
@@ -84,7 +108,7 @@ export default class App extends Component {
 
   }
 
-  async recordVoice() {
+  async startRecording() {
     // Request permission
     const permission = await this.requestMicrophonePermission();
     console.log(permission)
@@ -110,15 +134,15 @@ export default class App extends Component {
 
                 <Text style={{ fontSize: 20 }}>Source</Text>
                 <View style={styles.sourceView}>
-                  { Platform.OS === 'android' ?
+                  { this.isAndroid ? (
                     <View style={styles.sourceButtonContainer}>
                       <Icon.Button name='file-audio-o' backgroundColor='#e5ffff' style={styles.sourceButton} color='black' onPress={this.selectFile.bind(this)}>
                         <Text style={styles.buttonText}>Select file</Text>
                       </Icon.Button>
                     </View>
-                    : null }
+                  ) : null }
                   <View style={styles.sourceButtonContainer}>
-                    <Icon.Button name='microphone' backgroundColor='#e5ffff' color='black' onPress={this.recordVoice.bind(this)}>
+                    <Icon.Button name='microphone' backgroundColor='#e5ffff' color='black' onPress={this.toggleVoiceRecording.bind(this)}>
                       <Text style={styles.buttonText}>Record voice</Text>
                     </Icon.Button>
                   </View>
@@ -131,31 +155,22 @@ export default class App extends Component {
                 <Text style={styles.sectionTitle}>File metadata</Text>
                 <View style={styles.optionsView}>
                   <View style={styles.optionContainer}>
-                    <Text style={styles.label} onPress={() => Linking.openURL('https://cloud.google.com/speech-to-text/docs/encoding#audio-encodings')}>
-                      Encoding&nbsp;<Icon style={{ fontSize: 16 }} name="external-link" />
+                    <Text style={styles.label}>Format <Text style={{ fontSize: 12 }}>(See&nbsp;
+                        <Text style={styles.link} onPress={() => Linking.openURL('https://cloud.google.com/speech-to-text/docs/reference/rest/v1p1beta1/RecognitionConfig#audioencoding')}>module</Text>,&nbsp;
+                        <Text style={styles.link} onPress={() => Linking.openURL('https://github.com/react-native-community/react-native-audio-toolkit/blob/v2.0.3/docs/API.md#recorder-methods')}>API</Text>)
+                      </Text>
                     </Text>
                     {/* google.cloud.speech.v1p1beta1.RecognitionConfig.AudioEncoding
                         https://cloud.google.com/speech-to-text/docs/encoding#audio-encodings */}
-                    <Picker style={styles.picker} onValueChange={encoding => this.setState({ encoding })} selectedValue={this.state.encoding} mode={"dropdown"}>
-                      <Picker.Item value="MP3" label="MPEG Audio Layer III (MP3)" />
-                      <Picker.Item value="FLAC" label="Free Lossless Audio Codec (FLAC)" />
-                      <Picker.Item value="LINEAR16" label="Linear PCM (16-bit)" />
-                      <Picker.Item value="MULAW" label="μ-law (8-bit PCM encoding)" />
-                      <Picker.Item value="AMR" label="Adaptive Multi-Rate Narrowband (AMR)" />
-                      <Picker.Item value="AMR_WB" label="Adaptive Multi-Rate Wideband (AMR-WB)" />
-                      <Picker.Item value="OGG_OPUS" label="Opus encoded audio frames in an Ogg container" />
-                      <Picker.Item value="SPEEX_WITH_HEADER_BYTE" label="Speex wideband" />
-                      <Picker.Item value="ENCODING_UNSPECIFIED" label="Not specified." />
+                    <Picker style={[styles.picker, { flex: 0, minWidth: 110 }]} 
+                      onValueChange={format => this.setState({ format })} selectedValue={this.state.format} mode={"dropdown"}>
+                      {
+                        this.getAvailableFormats().map(f => (
+                          <Picker.Item value={f.value} label={f.label} key={f.value} />
+                        ))
+                      }
                     </Picker>
                   </View>
-                  {/* <View style={styles.optionContainer}>
-                    <Text style={styles.label}>Sample rate</Text>
-                    <Text style={styles.textValue}></Text>
-                  </View>
-                  <View style={styles.optionContainer}>
-                    <Text style={styles.label}>Bitrate</Text>
-                    <Text style={styles.textValue}></Text>
-                  </View> */}
                 </View>
 
               </View>
@@ -163,8 +178,8 @@ export default class App extends Component {
 
               <View style={styles.card}>
                 <View style={{ alignSelf: 'flex-start' }}>
-                  <Text style={styles.heading} onPress={() => Linking.openURL('https://cloud.google.com/speech-to-text/docs/reference/rest/v1p1beta1/RecognitionConfig')} >
-                    Options&nbsp;<Icon style={{ fontSize: 20 }} name="external-link" />
+                  <Text style={[styles.heading, styles.link]} onPress={() => Linking.openURL('https://cloud.google.com/speech-to-text/docs/reference/rest/v1p1beta1/RecognitionConfig')} >
+                    Options
                   </Text>
                 </View>
 
@@ -301,7 +316,6 @@ const styles = StyleSheet.create({
     flex: 1.3,
     maxHeight: 24,
     alignItems: 'flex-end',
-    width: '50%'
   },
   labelIcon: {
     paddingTop: 2,
@@ -316,6 +330,10 @@ const styles = StyleSheet.create({
   label: {
     flex: 1,
     fontSize: 18
+  },
+  link: {
+    color: '#33b5e5',
+    textDecorationLine: 'underline',
   },
 
   resultView: {
