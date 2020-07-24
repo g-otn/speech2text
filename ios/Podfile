@@ -12,6 +12,9 @@ target 'Speech2Text' do
 
   pod 'ReactNativeAudioToolkit', :path => '../node_modules/@react-native-community/audio-toolkit'
 
+
+
+
   target 'Speech2TextTests' do
     inherit! :complete
     # Pods for testing
