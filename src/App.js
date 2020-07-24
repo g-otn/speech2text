@@ -1,4 +1,4 @@
-import React, { useState, Component } from 'react';
+import React, { Component } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -8,12 +8,10 @@ import {
   Switch,
   Linking,
   Platform,
-  PermissionsAndroid,
   Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Picker } from '@react-native-community/picker';
-const languages = require('./languages.json');
 
 import { google } from '@google-cloud/speech/build/protos/protos';
 import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
@@ -21,7 +19,8 @@ import DocumentPicker from 'react-native-document-picker';
 
 export default class App extends Component {
 
-  static languagesPickerItems = languages.map(l => (<Picker.Item key={l.bcp47} label={l.name} value={l.bcp47} />));
+  recorder;
+  languagesPickerItems = require('./data/languages.json').map(l => (<Picker.Item key={l.bcp47} label={l.name} value={l.bcp47} />));
 
   constructor(props) {
     super(props);
@@ -29,7 +28,9 @@ export default class App extends Component {
     this.state = {
       // Metadata
       encoding: google.cloud.speech.v1p1beta1.RecognitionConfig.AudioEncoding.MP3,
-      sampleRateHertz: 16000,
+      bitrate: 256000,
+      sampleRateHertz: 44100,
+      
 
       // Main Options
       languageCode: 'pt-BR',
@@ -67,15 +68,20 @@ export default class App extends Component {
     let fileMetadata = {};
     try {
       fileMetadata = await DocumentPicker.pick({
-        type: [DocumentPicker.types.audio],
+        // type: [DocumentPicker.types.audio],
+        type: ['audio/AMR', 'audio/*'],
       });
     } catch (err) {
       console.error(err)
       return;
     }
 
-    // Read file
+    this.setState({ encoding: 'AMR' })
     Alert.alert('File', JSON.stringify(fileMetadata, null, '\t\t'))
+  }
+
+  async toggleVoiceRecording() {
+
   }
 
   async recordVoice() {
@@ -87,6 +93,7 @@ export default class App extends Component {
     }
 
     // Start recording
+
   }
 
 
@@ -103,11 +110,13 @@ export default class App extends Component {
 
                 <Text style={{ fontSize: 20 }}>Source</Text>
                 <View style={styles.sourceView}>
-                  <View style={styles.sourceButtonContainer}>
-                    <Icon.Button name='file-audio-o' backgroundColor='#e5ffff' style={styles.sourceButton} color='black' onPress={this.selectFile.bind(this)}>
-                      <Text style={styles.buttonText}>Select file</Text>
-                    </Icon.Button>
-                  </View>
+                  { Platform.OS === 'android' ?
+                    <View style={styles.sourceButtonContainer}>
+                      <Icon.Button name='file-audio-o' backgroundColor='#e5ffff' style={styles.sourceButton} color='black' onPress={this.selectFile.bind(this)}>
+                        <Text style={styles.buttonText}>Select file</Text>
+                      </Icon.Button>
+                    </View>
+                    : null }
                   <View style={styles.sourceButtonContainer}>
                     <Icon.Button name='microphone' backgroundColor='#e5ffff' color='black' onPress={this.recordVoice.bind(this)}>
                       <Text style={styles.buttonText}>Record voice</Text>
@@ -134,21 +143,19 @@ export default class App extends Component {
                       <Picker.Item value="MULAW" label="μ-law (8-bit PCM encoding)" />
                       <Picker.Item value="AMR" label="Adaptive Multi-Rate Narrowband (AMR)" />
                       <Picker.Item value="AMR_WB" label="Adaptive Multi-Rate Wideband (AMR-WB)" />
-                      <Picker.Item value="AMR_WB" label="Adaptive Multi-Rate Wideband (AMR-WB)" />
                       <Picker.Item value="OGG_OPUS" label="Opus encoded audio frames in an Ogg container" />
                       <Picker.Item value="SPEEX_WITH_HEADER_BYTE" label="Speex wideband" />
+                      <Picker.Item value="ENCODING_UNSPECIFIED" label="Not specified." />
                     </Picker>
                   </View>
-                  <View style={styles.optionContainer}>
+                  {/* <View style={styles.optionContainer}>
                     <Text style={styles.label}>Sample rate</Text>
                     <Text style={styles.textValue}></Text>
-                    {/* <TextInput style={styles.input} maxLength={5} keyboardType="number-pad" 
-                      onChangeText={value => { setSampleRateHertz(Number(value.replace(/\D/g, ''))); console.log(sampleRateHertz) }} value={sampleRateHertz}/> */}
                   </View>
                   <View style={styles.optionContainer}>
                     <Text style={styles.label}>Bitrate</Text>
                     <Text style={styles.textValue}></Text>
-                  </View>
+                  </View> */}
                 </View>
 
               </View>
@@ -166,7 +173,7 @@ export default class App extends Component {
                   <View style={styles.optionContainer}>
                     <Text style={styles.label}>Language</Text>
                     <Picker style={styles.picker} onValueChange={languageCode => this.setState({ languageCode })} selectedValue={this.state.languageCode} mode={"dialog"}>
-                      {App.languagesPickerItems}
+                      {this.languagesPickerItems}
                     </Picker>
                   </View>
                   <View style={styles.optionContainer}>
