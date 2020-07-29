@@ -15,9 +15,11 @@ import { Picker } from '@react-native-community/picker';
 
 import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import DocumentPicker from 'react-native-document-picker';
+import * as RNFS from 'react-native-fs';
+import { Recorder, Player } from '@react-native-community/audio-toolkit';
 
 export default class App extends Component {
-
+  player;
   recorder;
   
   isAndroid = Platform.OS === 'android'
@@ -27,10 +29,18 @@ export default class App extends Component {
     super(props);
 
     this.state = {
-      // Metadata
+      // Recorder
+      isRecording: false, // MediaStates.RECORDING
+      recorderBusy: false, // from MediaStates.PREPARING to MediaStates.RECORDING
+      // currentTime: undefined,
+      fileName: undefined,     // File name
+      fileFullPath: undefined, // Current full path of recording file
+
+      // File Metadata
       format: this.isAndroid ? 'amr' : 'm4a',
+
+      // File options
       convertInServer: true,
-      
 
       // Main Options
       languageCode: 'pt-BR',
@@ -43,6 +53,7 @@ export default class App extends Component {
     }
   }
 
+  
   getAvailableFormats() {
     let availableFormats = []
 
@@ -62,9 +73,19 @@ export default class App extends Component {
       availableFormats.push(
         { value: 'amr', label: 'amr' },
       )
-    } // iOS must convert in server, no accepted formats by the API available in Recorder
+    } // iOS must convert in server, no accepted formats by the API available in Recorder to be direcly sent
 
     return availableFormats;
+  }
+
+  getFileExtension() {
+    return this.getAvailableFormats().filter(f => f.value === this.state.format)[0].label;
+  }
+
+
+  async requestWriteStoragePermission() {
+    if (!this.isAndroid) return RESULTS.UNAVAILABLE;
+    return await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
   }
 
   async requestReadStoragePermission() {
@@ -81,8 +102,9 @@ export default class App extends Component {
     );
   }
 
+
   async selectFile() { // Android only
-    // Request permission
+    // Request permission to select file
     const permission = await this.requestReadStoragePermission();
     if (permission !== RESULTS.GRANTED) {
       return;
@@ -105,19 +127,123 @@ export default class App extends Component {
   }
 
   async toggleVoiceRecording() {
+    if (this.state.recorderBusy) return;
 
+    this.setState({ recorderBusy: true });
+    if (!this.state.isRecording) {
+      await this.startRecording();
+    } else {
+      await this.stopRecording();
+    }
+    this.setState({ recorderBusy: false });
   }
 
   async startRecording() {
-    // Request permission
-    const permission = await this.requestMicrophonePermission();
-    console.log(permission)
-    if (permission !== RESULTS.GRANTED) {
+    // Request permissions to use mic and write audio file
+    const microphonePermission = await this.requestMicrophonePermission();
+    const writeStoragePermission = await this.requestWriteStoragePermission();
+    if (microphonePermission !== RESULTS.GRANTED || (this.isAndroid && writeStoragePermission !== RESULTS.GRANTED)) {
       return;
     }
 
-    // Start recording
+    // Generate file names and prepare Recorder
+    const fileName = `S2T_${new Date().toISOString().replace(/[-:]/g, '').replace(/[T\.]/g, '_').slice(0, -5)}.${this.getFileExtension()}`;
+    const fileRelativePath = `${fileName}`; // Relative to app 'personal' folder
+    console.info('Recording file relative path:', fileRelativePath);
+    try {
+      await new Promise((resolve, reject) => {
 
+        this.recorder = new Recorder(fileRelativePath, { // Parent folders must exist
+          bitrate: 256000,
+          channels: 2,
+          format: this.state.format,
+          sampleRate: this.state.format === 'amr' ? 8000 : 44100,
+          meteringInterval: 1000
+        }).prepare((err, fsPath) => {
+          if (err) throw err;
+          console.log('Prepared to record at:', fsPath);
+          this.setState({ fileName, fileFullPath: fsPath });
+          resolve();
+        });
+
+      });
+    } catch (err) {
+      console.error('Error preparing Recorder:', err);
+      Alert.alert('Error while preparing to record', err);
+      return;
+    }
+
+    // Set meter event handler to update counter
+    // this.setState({ currentTime: 0 });
+    // this.recorder.on('meter', data => { // Event not firing for some reason
+    //   console.log(data);
+    //   this.setState({ currentTime: this.state.currentTime + 1 });
+    // });
+
+    // Start recording
+    this.setState({ isRecording: true });
+    try {
+      await new Promise((resolve, reject) => {
+        
+        this.recorder.record(err => {
+          if (err) throw err;
+          console.info('Recording started');
+          resolve();
+        });
+
+      });
+    } catch (err) {
+      console.error('Error while recording:', err);
+      Alert.alert('Error while recording', err);
+      this.setState({ isRecording: false });
+      return;
+    }
+  }
+
+  async stopRecording() {
+    // Stop recording
+    try {
+      await new Promise((resolve, reject) => {
+
+        this.recorder.stop(err => {
+          if (err) throw err;
+          console.info('Recording stopped');
+          resolve();
+        });
+
+      });
+    } catch (err) {
+      console.error('Error while stopping to record:', err);
+      Alert.alert('Error while stopping to record', err);
+      this.setState({ isRecording: false });
+      return;
+    }
+
+    // Copy file to external directory
+    if (this.isAndroid) {
+      try {
+        const recordingsExternalFolderPath = `${RNFS.ExternalStorageDirectoryPath}/Speech2Text`;
+        await RNFS.mkdir(recordingsExternalFolderPath); // Create directory if it doesn't exist yet
+  
+        // Move file to acessible external folder
+        const fileExternalFullPath = `${recordingsExternalFolderPath}/${this.state.fileName}`;
+        console.info('Moving file\n from:', this.state.fileFullPath, '\n to:', fileExternalFullPath);
+        await RNFS.moveFile(this.state.fileFullPath, fileExternalFullPath);
+        Alert.alert('Recording saved', `Audio file saved at "${fileExternalFullPath.replace(RNFS.ExternalStorageDirectoryPath + '/', '')}".\n\nYou can now send the audio to be converted to text`);
+      } catch (err) {
+        console.error('Error while moving temp file:', err);
+        Alert.alert('Error while moving file', err);
+      }
+    }
+    this.setState({ isRecording: false });
+  }
+
+  // https://stackoverflow.com/a/61335543/11138267
+  secondsToTime(e){
+    var h = Math.floor(e / 3600).toString().padStart(2,'0'),
+        m = Math.floor(e % 3600 / 60).toString().padStart(2,'0'),
+        s = Math.floor(e % 60).toString().padStart(2,'0');
+    return h + ':' + m + ':' + s;
   }
 
 
@@ -142,8 +268,14 @@ export default class App extends Component {
                     </View>
                   ) : null }
                   <View style={styles.sourceButtonContainer}>
-                    <Icon.Button name='microphone' backgroundColor='#e5ffff' color='black' onPress={this.toggleVoiceRecording.bind(this)}>
-                      <Text style={styles.buttonText}>Record voice</Text>
+                    <Icon.Button name={this.state.isRecording ? 'stop' : 'microphone'} 
+                      backgroundColor={this.state.isRecording || this.state.recorderBusy ? '#d9534f' : '#e5ffff'} 
+                      color={this.state.isRecording ? 'white' : 'black'} 
+                      onPress={this.toggleVoiceRecording.bind(this)} 
+                      disabled={this.state.recorderBusy}>
+                      <Text style={this.state.isRecording || this.state.recorderBusy ? styles.buttonTextRed : styles.buttonText}>
+                        {this.state.isRecording ? 'Stop recording' : 'Record voice'}
+                      </Text>
                     </Icon.Button>
                   </View>
                 </View>
@@ -154,6 +286,10 @@ export default class App extends Component {
 
                 <Text style={styles.sectionTitle}>File metadata</Text>
                 <View style={styles.optionsView}>
+                  <View style={styles.optionContainer}>
+                    <Text style={styles.label}>Name</Text>
+                  <Text numberOfLines={2} style={{ flex: 2, fontSize: 14 }}>{(this.state.fileName || '').replace(RNFS.ExternalStorageDirectoryPath + '/', '')}</Text>
+                  </View>
                   <View style={styles.optionContainer}>
                     <Text style={styles.label}>Format <Text style={{ fontSize: 12 }}>(See&nbsp;
                         <Text style={styles.link} onPress={() => Linking.openURL('https://cloud.google.com/speech-to-text/docs/reference/rest/v1p1beta1/RecognitionConfig#audioencoding')}>module</Text>,&nbsp;
@@ -286,6 +422,10 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'black',
+    fontSize: 18
+  },
+  buttonTextRed: {
+    color: 'white',
     fontSize: 18
   },
   input: {
