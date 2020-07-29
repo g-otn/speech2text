@@ -17,6 +17,8 @@ import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import DocumentPicker from 'react-native-document-picker';
 import * as RNFS from 'react-native-fs';
 import { Recorder, Player } from '@react-native-community/audio-toolkit';
+import CheckBox from '@react-native-community/checkbox';
+import { Consts } from './Consts';
 
 export default class App extends Component {
   player;
@@ -29,6 +31,8 @@ export default class App extends Component {
     super(props);
 
     this.state = {
+      connectedWithBackend: false,
+
       // Recorder
       isRecording: false, // MediaStates.RECORDING
       recorderBusy: false, // from MediaStates.PREPARING to MediaStates.RECORDING
@@ -36,13 +40,12 @@ export default class App extends Component {
       fileName: undefined,     // File name
       fileFullPath: undefined, // Current full path of recording file
 
-      // File Metadata
-      format: this.isAndroid ? 'amr' : 'm4a',
+      // File metadata and options
+      audioSource: undefined, // 'file' || 'recorder'
+      convertInBackend: this.isAndroid ? false : true,
+      format: this.isAndroid ? 'amr' : 'mp4',
 
-      // File options
-      convertInServer: true,
-
-      // Main Options
+      // Recognition options
       languageCode: 'pt-BR',
       profanityFilter: true,
       wordTimeOffset: false,
@@ -53,13 +56,41 @@ export default class App extends Component {
     }
   }
 
+  componentDidMount() {
+    this.connectWithBackend();
+  }
+
+  async connectWithBackend() {
+    this.setState({ connectedWithBackend: false });
+    return fetch(`${Consts.BACKEND_URL}/status`)
+      .then(response => { 
+        this.setState({ connectedWithBackend: response.ok });
+        // if (this.state.connectedWithBackend) Alert.alert('Connected with backend', 'Successfully connected with backend, you can now use more audio formats.');
+      })
+      .catch(err => {
+        console.error('Error connection with backend:', err);
+        this.setState({ connectedWithBackend: false });
+      })
+  }
+
+  resetAudioSource(newFormat) {
+    this.setState({ fileName: null, fileFullPath: null, format: newFormat })
+  }
   
   getAvailableFormats() {
+    /*
+      Recorder formats notes
+      mp4: AMR-NB (Adaptive Multi-Rate NarrowBand); 1 channel only?
+      aac: AAC (Advanced Audio Coding)
+      ogg:
+      webm:
+      amr: AMR-WB (Adaptive Multi-Rate WideBand); 1 channel only?
+    */
     let availableFormats = []
 
-    if (this.state.convertInServer) {
+    if (this.state.connectedWithBackend) {
       availableFormats.push(
-        { value: 'mp4', label: 'm4a' },
+        { value: 'mp4', label: 'mp4' },
         { value: 'aac', label: 'aac' },
       )
       if (this.isAndroid) {
@@ -114,16 +145,20 @@ export default class App extends Component {
     let fileMetadata = {};
     try {
       fileMetadata = await DocumentPicker.pick({
-        // type: [DocumentPicker.types.audio],
-        type: ['audio/AMR', 'audio/*'],
+        type: this.getAvailableFormats().map(f => `audio/${f.value}`),
       });
     } catch (err) {
-      console.error(err)
+      console.error('Error selecting file', err)
       return;
     }
 
-    this.setState({ format: 'amr' })
-    Alert.alert('File', JSON.stringify(fileMetadata, null, '\t\t'))
+    const fileFormat = fileMetadata.type.split('/')[1];
+    this.setState({ 
+      format: fileFormat, 
+      fileName: fileMetadata.name, 
+      fileFullPath: fileMetadata.uri,
+      convertInBackend: this.requiresToConvertInBackend(fileFormat)
+    });
   }
 
   async toggleVoiceRecording() {
@@ -149,7 +184,7 @@ export default class App extends Component {
     // Generate file names and prepare Recorder
     const fileName = `S2T_${new Date().toISOString().replace(/[-:]/g, '').replace(/[T\.]/g, '_').slice(0, -5)}.${this.getFileExtension()}`;
     const fileRelativePath = `${fileName}`; // Relative to app 'personal' folder
-    console.info('Recording file relative path:', fileRelativePath);
+    console.info(`Recording ${this.state.format} audio in relative path:`, fileRelativePath);
     try {
       await new Promise((resolve, reject) => {
 
@@ -157,11 +192,14 @@ export default class App extends Component {
           bitrate: 256000,
           channels: 2,
           format: this.state.format,
-          sampleRate: this.state.format === 'amr' ? 8000 : 44100,
+          sampleRate: this.state.format === 'amr' ? 16000 : 44100,
           meteringInterval: 1000
         }).prepare((err, fsPath) => {
-          if (err) throw err;
-          console.log('Prepared to record at:', fsPath);
+          if (err) {
+            reject(err);
+            return;
+          }
+          console.info('Prepared to record at:', fsPath);
           this.setState({ fileName, fileFullPath: fsPath });
           resolve();
         });
@@ -186,7 +224,10 @@ export default class App extends Component {
       await new Promise((resolve, reject) => {
         
         this.recorder.record(err => {
-          if (err) throw err;
+          if (err) {
+            reject(err);
+            return;
+          }
           console.info('Recording started');
           resolve();
         });
@@ -206,7 +247,10 @@ export default class App extends Component {
       await new Promise((resolve, reject) => {
 
         this.recorder.stop(err => {
-          if (err) throw err;
+          if (err) {
+            reject(err);
+            return;
+          }
           console.info('Recording stopped');
           resolve();
         });
@@ -229,13 +273,29 @@ export default class App extends Component {
         const fileExternalFullPath = `${recordingsExternalFolderPath}/${this.state.fileName}`;
         console.info('Moving file\n from:', this.state.fileFullPath, '\n to:', fileExternalFullPath);
         await RNFS.moveFile(this.state.fileFullPath, fileExternalFullPath);
-        Alert.alert('Recording saved', `Audio file saved at "${fileExternalFullPath.replace(RNFS.ExternalStorageDirectoryPath + '/', '')}".\n\nYou can now send the audio to be converted to text`);
+        this.setState({ fileFullPath: fileExternalFullPath });
+        Alert.alert('Recording saved', `Audio file saved at\n"${fileExternalFullPath.replace(RNFS.ExternalStorageDirectoryPath + '/', '')}".\n\nYou can now send the audio to be converted to text`);
       } catch (err) {
         console.error('Error while moving temp file:', err);
         Alert.alert('Error while moving file', err);
       }
     }
-    this.setState({ isRecording: false });
+
+    console.log('requiresToConvertInBackend', this.requiresToConvertInBackend(this.state.format));
+    this.setState({ isRecording: false, convertInBackend: this.requiresToConvertInBackend(this.state.format) });
+  }
+
+  requiresToConvertInBackend(format) {
+    return format !== 'amr';
+  }
+
+  showConvertInServerAlert() {
+    Alert.alert('Convert audio in server', 
+    'All audio formats except .amr needs to be converted in the backend server to be acceptable to Google Speech-to-Text API.' +
+    '\n\nThis app must be connected to the backend to upload the audio for conversion.',
+    [{ text: `${this.state.connectedWithBackend ? 'Reconnect' : 'Connect'} with backend`, onPress: () => { this.connectWithBackend() } }, 
+    { text: 'Ok' }]
+    );
   }
 
   // https://stackoverflow.com/a/61335543/11138267
@@ -284,11 +344,17 @@ export default class App extends Component {
 
                 </View>
 
-                <Text style={styles.sectionTitle}>File metadata</Text>
+                <Text style={styles.sectionTitle}>File metadata and options</Text>
                 <View style={styles.optionsView}>
                   <View style={styles.optionContainer}>
                     <Text style={styles.label}>Name</Text>
-                  <Text numberOfLines={2} style={{ flex: 2, fontSize: 14 }}>{(this.state.fileName || '').replace(RNFS.ExternalStorageDirectoryPath + '/', '')}</Text>
+                    <Text numberOfLines={2} style={{ flex: 2, fontSize: 14, textAlign: 'right' }}>{this.state.fileName}</Text>
+                  </View>
+                  <View style={styles.optionContainer}>
+                    <Text style={styles.label}>URI / Path</Text>
+                    <Text numberOfLines={3} style={{ flex: 2, fontSize: 12 }}>
+                      {(this.state.fileFullPath || '').replace(RNFS.ExternalStorageDirectoryPath + '/', '')}
+                    </Text>
                   </View>
                   <View style={styles.optionContainer}>
                     <Text style={styles.label}>Format <Text style={{ fontSize: 12 }}>(See&nbsp;
@@ -299,7 +365,10 @@ export default class App extends Component {
                     {/* google.cloud.speech.v1p1beta1.RecognitionConfig.AudioEncoding
                         https://cloud.google.com/speech-to-text/docs/encoding#audio-encodings */}
                     <Picker style={[styles.picker, { flex: 0, minWidth: 110 }]} 
-                      onValueChange={format => this.setState({ format })} selectedValue={this.state.format} mode={"dropdown"}>
+                      onValueChange={format => { 
+                        if (format !== this.state.format) this.resetAudioSource(format) 
+                      } } 
+                      selectedValue={this.state.format} mode={"dropdown"}>
                       {
                         this.getAvailableFormats().map(f => (
                           <Picker.Item value={f.value} label={f.label} key={f.value} />
@@ -318,8 +387,23 @@ export default class App extends Component {
                     Options
                   </Text>
                 </View>
+                <Text style={styles.sectionTitle}>Conversion</Text>
+                  <View style={styles.optionContainer}>
+                    <Text style={styles.label}>Backend status <Text style={{ fontSize: 12 }}>({ Consts.BACKEND_URL })</Text></Text>
+                    <Icon name="refresh" size={18} style={{ marginRight: 10 }} onPress={this.connectWithBackend.bind(this)}/>
+                    <Text style={[styles.label, { flex: 0, color: this.state.connectedWithBackend ? '#5cb85c' : '#d9534f' }]}>
+                      {this.state.connectedWithBackend ? 'connected' : 'not connected' }
+                    </Text>
+                  </View>
+                  <View style={styles.optionContainer}>
+                    <Icon name="info-circle" size={18} style={{ marginRight: 10 }} onPress={this.showConvertInServerAlert.bind(this)}/>
+                    <Text style={styles.label}>Convert in backend</Text>
+                    <CheckBox style={styles.checkbox} disabled={true} value={this.state.convertInBackend}/>
+                  </View>
+                <View style={styles.optionsView}>
+                </View>
 
-                <Text style={styles.sectionTitle}>Main options</Text>
+                <Text style={styles.sectionTitle}>Recognition options</Text>
                 <View style={styles.optionsView}>
                   <View style={styles.optionContainer}>
                     <Text style={styles.label}>Language</Text>
@@ -456,6 +540,10 @@ const styles = StyleSheet.create({
     flex: 1.3,
     maxHeight: 24,
     alignItems: 'flex-end',
+  },
+  checkbox: {
+    maxHeight: 22,
+    marginRight: 7,
   },
   labelIcon: {
     paddingTop: 2,
