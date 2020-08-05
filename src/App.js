@@ -49,8 +49,8 @@ export default class App extends Component {
 
       // Recognition options
       languageCode: 'pt-BR',
-      profanityFilter: true,
-      wordTimeOffset: false,
+      profanityFilter: false,
+      wordTimeOffset: true,
       wordConfidence: false,
       automaticPunctuation: false,
       model: 'default',
@@ -100,35 +100,46 @@ export default class App extends Component {
     let fileBase64 = '';
     await RNFS.readFile(this.state.fileFullPath, 'base64')
       .then(data => { fileBase64 = data });
-    console.log('File loaded. Base64 length:', fileBase64.length);
+    console.info('File loaded. Base64 length:', fileBase64.length);
 
-    // Create request body and send request
+    // Create request body
     const audio = {
       content: fileBase64
     };
     const config = {
       encoding: 'AMR_WB',
       languageCode: this.state.languageCode,
-      sampleRateHertz: this.state.format === 'amr' ? 16000 : 44100
+      sampleRateHertz: this.state.format === 'amr' ? 16000 : 44100,
+
+      profanityFilter: this.state.profanityFilter,
+      enableWordTimeOffsets: this.state.wordTimeOffset,
+      enableWordConfidence: this.state.wordConfidence,
+      enableAutomaticPunctuation: this.state.automaticPunctuation,
+      model: this.state.model,
+      useEnhanced: this.state.useEnhanced
     };
-    console.log('config:', config);
+    console.info('RecognitionConfig:\n' + JSON.stringify(config, null, '  '));
+
+    // Send request to Google Cloud Speech-to-Text API
     this.setState({ recognitionAIText: 'Sending audio to API' });
     await fetch(`https://content-speech.googleapis.com/v1p1beta1/speech:recognize?key=${Consts.GOOGLE_CLOUD_API_KEY}`, {
       method: 'POST',
       body: JSON.stringify({ audio, config })
     })
       .then(async response => {
-        console.log('response:', response);
         if (response.ok) {
-          const responseBody = await response.json();
-          console.log('responseBody:\n', responseBody);
-          this.setState({ responseBodyText: JSON.stringify(responseBody, null, '\t\t') });
+          const data = await response.json(); // Response body
+          console.info('responseBody:\n' + JSON.stringify(data, null, '  '));
+          this.setState({ 
+            transcriptText: data.results[0].alternatives[0].transcript,
+            responseBodyText: JSON.stringify(data, null, '\t') 
+          });
         } else {
-          console.error('response not ok:', response.status, response.statusText, response);
+          console.warn('API response not ok:', response.status, response.statusText, response);
         }
       })
       .catch(err => {
-        console.log('Error sending audio to API:', err);
+        console.error('Error sending audio to API:', err);
       });
 
     this.setState({ isRecognizing: false })
@@ -345,7 +356,6 @@ export default class App extends Component {
       }
     }
 
-    console.log('requiresToConvertInBackend', this.requiresToConvertInBackend(this.state.format));
     this.setState({ isRecording: false, convertInBackend: this.requiresToConvertInBackend(this.state.format) });
   }
 
@@ -521,7 +531,7 @@ export default class App extends Component {
                 </Icon.Button>
               </View>
 
-              <View style={[styles.card, { marginBottom: 20 }]}>
+              <View style={[styles.card, { marginBottom: 0, flex: 1 }]}>
                 <Text style={styles.heading}>Response</Text>
 
                 { this.state.isRecognizing ? (
@@ -532,12 +542,12 @@ export default class App extends Component {
                 ) : null}
                 
                 <Text style={styles.sectionTitle}>Transcript</Text>
-                <ScrollView style={styles.resultView}>
+                <ScrollView style={styles.resultView} nestedScrollEnabled={true}>
                   <Text style={styles.textarea} numberOfLines={1000}>{this.state.transcriptText}</Text>
                 </ScrollView>
 
                 <Text style={styles.sectionTitle}>Body</Text>
-                <ScrollView style={styles.resultView}>
+                <ScrollView style={styles.resultView} nestedScrollEnabled={true}>
                   <Text style={styles.textarea} numberOfLines={1000}>{this.state.responseBodyText}</Text>
                 </ScrollView>
               </View>
@@ -562,6 +572,7 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 15,
     paddingVertical: 10,
+    paddingBottom: 15,
     paddingHorizontal: 15,
     backgroundColor: Color.P,
     marginBottom: 10,
