@@ -9,6 +9,7 @@ import {
   Linking,
   Platform,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Picker } from '@react-native-community/picker';
@@ -19,6 +20,7 @@ import * as RNFS from 'react-native-fs';
 import { Recorder, Player } from '@react-native-community/audio-toolkit';
 import CheckBox from '@react-native-community/checkbox';
 import { Consts } from './Consts';
+import { Color } from './styles/Theme';
 
 export default class App extends Component {
   player;
@@ -53,6 +55,12 @@ export default class App extends Component {
       automaticPunctuation: false,
       model: 'default',
       enhancedModel: false,
+
+      // Response
+      isRecognizing: false, // Google Speech-to-Text API Request in progress
+      recognitionAIText: '',
+      responseBodyText: '',
+      transcriptText: '',
     }
   }
 
@@ -62,15 +70,68 @@ export default class App extends Component {
 
   async connectWithBackend() {
     this.setState({ connectedWithBackend: false });
+    console.info(`Checking backend status (${Consts.BACKEND_URL})`);
     return fetch(`${Consts.BACKEND_URL}/status`)
       .then(response => { 
         this.setState({ connectedWithBackend: response.ok });
         // if (this.state.connectedWithBackend) Alert.alert('Connected with backend', 'Successfully connected with backend, you can now use more audio formats.');
       })
       .catch(err => {
-        console.error('Error connection with backend:', err);
+        console.error('Error accessing backend:', err);
         this.setState({ connectedWithBackend: false });
       })
+  }
+
+  canSendAudio() { // Not recording and has selected file
+    return !this.state.isRecording && !this.state.recorderBusy && !!this.state.fileFullPath && !this.state.isRecognizing;
+  }
+
+  async doSpeechToText() {
+    if (!this.canSendAudio()) return;
+
+    this.setState({ 
+      isRecognizing: true, 
+      recognitionAIText: 'Reading file from device',
+      responseBodyText: '',
+      transcriptText: ''
+    });
+
+    // Read file bytes and encode in base64
+    let fileBase64 = '';
+    await RNFS.readFile(this.state.fileFullPath, 'base64')
+      .then(data => { fileBase64 = data });
+    console.log('File loaded. Base64 length:', fileBase64.length);
+
+    // Create request body and send request
+    const audio = {
+      content: fileBase64
+    };
+    const config = {
+      encoding: 'AMR_WB',
+      languageCode: this.state.languageCode,
+      sampleRateHertz: this.state.format === 'amr' ? 16000 : 44100
+    };
+    console.log('config:', config);
+    this.setState({ recognitionAIText: 'Sending audio to API' });
+    await fetch(`https://content-speech.googleapis.com/v1p1beta1/speech:recognize?key=${Consts.GOOGLE_CLOUD_API_KEY}`, {
+      method: 'POST',
+      body: JSON.stringify({ audio, config })
+    })
+      .then(async response => {
+        console.log('response:', response);
+        if (response.ok) {
+          const responseBody = await response.json();
+          console.log('responseBody:\n', responseBody);
+          this.setState({ responseBodyText: JSON.stringify(responseBody, null, '\t\t') });
+        } else {
+          console.error('response not ok:', response.status, response.statusText, response);
+        }
+      })
+      .catch(err => {
+        console.log('Error sending audio to API:', err);
+      });
+
+    this.setState({ isRecognizing: false })
   }
 
   resetAudioSource(newFormat) {
@@ -142,10 +203,12 @@ export default class App extends Component {
     }
 
     // Select file
+    const availableTypes = this.getAvailableFormats().map(f => `audio/${f.value}`); // MIME types (for Android)
+    console.info('Opening document picker with types:', availableTypes);
     let fileMetadata = {};
     try {
       fileMetadata = await DocumentPicker.pick({
-        type: this.getAvailableFormats().map(f => `audio/${f.value}`),
+        type: availableTypes,
       });
     } catch (err) {
       console.error('Error selecting file', err)
@@ -159,6 +222,7 @@ export default class App extends Component {
       fileFullPath: fileMetadata.uri,
       convertInBackend: this.requiresToConvertInBackend(fileFormat)
     });
+    console.info('Selected file URI:', this.state.fileFullPath);
   }
 
   async toggleVoiceRecording() {
@@ -299,13 +363,12 @@ export default class App extends Component {
   }
 
   // https://stackoverflow.com/a/61335543/11138267
-  secondsToTime(e){
-    var h = Math.floor(e / 3600).toString().padStart(2,'0'),
-        m = Math.floor(e % 3600 / 60).toString().padStart(2,'0'),
-        s = Math.floor(e % 60).toString().padStart(2,'0');
-    return h + ':' + m + ':' + s;
-  }
-
+  // secondsToTime(e){
+  //   var h = Math.floor(e / 3600).toString().padStart(2,'0'),
+  //       m = Math.floor(e % 3600 / 60).toString().padStart(2,'0'),
+  //       s = Math.floor(e % 60).toString().padStart(2,'0');
+  //   return h + ':' + m + ':' + s;
+  // }
 
   render() {
     return (
@@ -322,14 +385,15 @@ export default class App extends Component {
                 <View style={styles.sourceView}>
                   { this.isAndroid ? (
                     <View style={styles.sourceButtonContainer}>
-                      <Icon.Button name='file-audio-o' backgroundColor='#e5ffff' style={styles.sourceButton} color='black' onPress={this.selectFile.bind(this)}>
+                      <Icon.Button name='file-audio-o' backgroundColor={Color.S} style={styles.sourceButton} color='black' onPress={this.selectFile.bind(this)} 
+                        disabled={this.state.isRecording || this.state.recorderBusy} >
                         <Text style={styles.buttonText}>Select file</Text>
                       </Icon.Button>
                     </View>
                   ) : null }
                   <View style={styles.sourceButtonContainer}>
                     <Icon.Button name={this.state.isRecording ? 'stop' : 'microphone'} 
-                      backgroundColor={this.state.isRecording || this.state.recorderBusy ? '#d9534f' : '#e5ffff'} 
+                      backgroundColor={this.state.isRecording || this.state.recorderBusy ? '#d9534f' : Color.S} 
                       color={this.state.isRecording ? 'white' : 'black'} 
                       onPress={this.toggleVoiceRecording.bind(this)} 
                       disabled={this.state.recorderBusy}>
@@ -413,19 +477,23 @@ export default class App extends Component {
                   </View>
                   <View style={styles.optionContainer}>
                     <Text style={styles.label}>Profanity filter</Text>
-                    <Switch style={styles.switch} onValueChange={profanityFilter => this.setState({ profanityFilter })} value={this.state.profanityFilter} />
+                    <Switch style={styles.switch} trackColor={Color.S_LIGHT} thumbColor={Color.S_DARK}
+                      onValueChange={profanityFilter => this.setState({ profanityFilter })} value={this.state.profanityFilter} />
                   </View>
                   <View style={styles.optionContainer}>
                     <Text style={styles.label}>Word time offset</Text>
-                    <Switch style={styles.switch} onValueChange={wordTimeOffset => this.setState({ wordTimeOffset })} value={this.state.wordTimeOffset} />
+                    <Switch style={styles.switch} trackColor={Color.S_LIGHT} thumbColor={Color.S_DARK}
+                      onValueChange={wordTimeOffset => this.setState({ wordTimeOffset })} value={this.state.wordTimeOffset} />
                   </View>
                   <View style={styles.optionContainer}>
                     <Text style={styles.label}>Word confidence</Text>
-                    <Switch style={styles.switch} onValueChange={wordConfidence => this.setState({ wordConfidence })} value={this.state.wordConfidence} />
+                    <Switch style={styles.switch} trackColor={Color.S_LIGHT} thumbColor={Color.S_DARK}
+                      onValueChange={wordConfidence => this.setState({ wordConfidence })} value={this.state.wordConfidence} />
                   </View>
                   <View style={styles.optionContainer}>
                     <Text style={styles.label}>Automatic punctuation</Text>
-                    <Switch style={styles.switch} onValueChange={automaticPunctuation => this.setState({ automaticPunctuation })} value={this.state.automaticPunctuation} />
+                    <Switch style={styles.switch} trackColor={Color.S_LIGHT} thumbColor={Color.S_DARK}
+                      onValueChange={automaticPunctuation => this.setState({ automaticPunctuation })} value={this.state.automaticPunctuation} />
                   </View>
                   <View style={styles.optionContainer}>
                     <Text style={styles.label}>Model</Text>
@@ -438,7 +506,8 @@ export default class App extends Component {
                   </View>
                   <View style={styles.optionContainer}>
                     <Text style={styles.label}>Enhanced model</Text>
-                    <Switch style={styles.switch} onValueChange={enhancedModel => this.setState({ enhancedModel })} value={this.state.enhancedModel} />
+                    <Switch style={styles.switch} trackColor={Color.S_LIGHT} thumbColor={Color.S_DARK}
+                      onValueChange={enhancedModel => this.setState({ enhancedModel })} value={this.state.enhancedModel} />
                   </View>
                 </View>
 
@@ -446,22 +515,30 @@ export default class App extends Component {
                 <View style={styles.optionsView}>
                 </View> */}
 
-                <Icon.Button name='cloud-upload' backgroundColor='#e5ffff' style={styles.sourceButton} color='black' onPress={() => { }} disabled={true}>
-                  <Text style={styles.buttonText}>Send audio</Text>
+                <Icon.Button name='cloud-upload' backgroundColor={this.canSendAudio() ? Color.S : 'lightgrey'} style={styles.sourceButton} color='black' 
+                  onPress={this.doSpeechToText.bind(this)} disabled={!this.canSendAudio()}>
+                  <Text style={styles.buttonText}>Recognize speech</Text>
                 </Icon.Button>
               </View>
 
               <View style={[styles.card, { marginBottom: 20 }]}>
                 <Text style={styles.heading}>Response</Text>
 
+                { this.state.isRecognizing ? (
+                  <View style={styles.optionContainer}>
+                    <ActivityIndicator style={{ marginRight: 5 }} size="small" color={Color.S_DARK} />
+                    <Text style={styles.label}>{this.state.recognitionAIText}</Text>
+                  </View>
+                ) : null}
+                
                 <Text style={styles.sectionTitle}>Transcript</Text>
                 <ScrollView style={styles.resultView}>
-                  <Text style={styles.textarea} numberOfLines={1000}>{}</Text>
+                  <Text style={styles.textarea} numberOfLines={1000}>{this.state.transcriptText}</Text>
                 </ScrollView>
 
                 <Text style={styles.sectionTitle}>Body</Text>
                 <ScrollView style={styles.resultView}>
-                  <Text style={styles.textarea} numberOfLines={1000}>{}</Text>
+                  <Text style={styles.textarea} numberOfLines={1000}>{this.state.responseBodyText}</Text>
                 </ScrollView>
               </View>
 
@@ -476,7 +553,7 @@ export default class App extends Component {
 
 const styles = StyleSheet.create({
   safeAreaView: {
-    backgroundColor: '#82ada9',
+    backgroundColor: Color.P_DARK,
     flex: 1,
   },
   scrollView: {
@@ -486,7 +563,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     paddingVertical: 10,
     paddingHorizontal: 15,
-    backgroundColor: '#b2dfdb',
+    backgroundColor: Color.P,
     marginBottom: 10,
   },
   heading: {
@@ -514,7 +591,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1.3,
-    backgroundColor: '#e5ffff',
+    backgroundColor: Color.S,
     color: 'black',
     maxHeight: 24,
     borderRadius: 5,
@@ -567,7 +644,7 @@ const styles = StyleSheet.create({
   resultView: {
     padding: 10,
     maxHeight: 300,
-    borderColor: '#82ada9',
+    borderColor: Color.S_DARK,
     borderRadius: 5,
     borderWidth: 3,
   },
