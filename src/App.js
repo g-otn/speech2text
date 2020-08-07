@@ -13,17 +13,20 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Picker } from '@react-native-community/picker';
+import Slider from '@react-native-community/slider';
+import CheckBox from '@react-native-community/checkbox';
 
 import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import { Recorder, Player } from '@react-native-community/audio-toolkit';
 import DocumentPicker from 'react-native-document-picker';
 import * as RNFS from 'react-native-fs';
-import { Recorder, Player } from '@react-native-community/audio-toolkit';
-import CheckBox from '@react-native-community/checkbox';
+
 import { Consts } from './Consts';
 import { Color } from './styles/Theme';
 
 export default class App extends Component {
   player;
+  currentTimeInterval;
   recorder;
   
   isAndroid = Platform.OS === 'android'
@@ -35,17 +38,23 @@ export default class App extends Component {
     this.state = {
       connectedWithBackend: false,
 
+      // Player
+      isPlaying: false, // MediaStates.PLAYING
+      playerBusy: false, // MediaStates.PREPARING or MediaStates.SEEKING
+      playerCurrentTimeAprox: null, // Updated through currentTimeTextUpdateInterval
+      playerTimeText: '00:00:00',
+
       // Recorder
       isRecording: false, // MediaStates.RECORDING
       recorderBusy: false, // from MediaStates.PREPARING to MediaStates.RECORDING
-      // currentTime: undefined,
-      fileName: undefined,     // File name
-      fileFullPath: undefined, // Current full path of recording file
+      fileName: null,     // File name
+      fileFullPath: null, // Current full path of recording file
 
       // File metadata and options
-      audioSource: undefined, // 'file' || 'recorder'
+      audioSource: null, // 'file' || 'recorder'
       convertInBackend: this.isAndroid ? false : true,
       format: this.isAndroid ? 'amr' : 'mp4',
+      duration: null, // Value received from Player to help determine if Google Storage upload is needed
 
       // Recognition options
       languageCode: 'pt-BR',
@@ -68,6 +77,10 @@ export default class App extends Component {
     this.connectWithBackend();
   }
 
+  componentWillUnmount() {
+    clearInterval(this.currentTimeInterval);
+  }
+
   async connectWithBackend() {
     this.setState({ connectedWithBackend: false });
     console.info(`Checking backend status (${Consts.BACKEND_URL})`);
@@ -80,6 +93,10 @@ export default class App extends Component {
         console.error('Error accessing backend:', err);
         this.setState({ connectedWithBackend: false });
       })
+  }
+
+  canLoadPlayer() {
+    return !this.state.isRecording && !!this.state.fileFullPath && !this.state.playerBusy;
   }
 
   canSendAudio() { // Not recording and has selected file
@@ -146,7 +163,12 @@ export default class App extends Component {
   }
 
   resetAudioSource(newFormat) {
-    this.setState({ fileName: null, fileFullPath: null, format: newFormat })
+    this.setState({ 
+      fileName: null, 
+      fileFullPath: null, 
+      format: newFormat,
+      duration: null,
+    });
   }
   
   getAvailableFormats() {
@@ -205,6 +227,138 @@ export default class App extends Component {
     );
   }
 
+  async destroyPlayer() {
+    if (this.player) {
+      await new Promise((resolve, reject) => { 
+        this.player.destroy(resolve);
+      });
+      this.player = null;
+    }
+  }
+
+  async loadPlayer() {
+    if (!this.canLoadPlayer()) return;
+    this.setState({ 
+      playerBusy: true,
+      isPlaying: false,
+      playerTimeText: '00:00:00',
+      playerCurrentTimeAprox: 0,
+    });
+    
+    clearInterval(this.currentTimeInterval);
+
+    // Destroy previous player
+    await this.destroyPlayer();
+
+
+    // Initalize and prepare new player
+    try {
+      await new Promise((resolve, reject) => {
+
+        this.player = new Player(this.state.fileFullPath, {
+          autoDestroy: false,
+          meteringInterval: 200
+        });
+
+        // Fix "playerId X not found" Android error when trying to play: https://github.com/react-native-community/react-native-audio-toolkit/issues/168
+        if (this.isAndroid) this.player.speed = 0.0;
+        
+        this.player.prepare((err) => {
+          if (err) {
+            reject(err);
+          } else {
+            console.info('Prepared to play audio');
+            resolve();
+          }
+        });
+
+      });
+    } catch (err) {
+      console.error('Error preparing Player:', err);
+      Alert.alert('Error while preparing audio player', err);
+      return;
+    }
+
+    this.player.on('ended', () => { // Playback ended, Player now is MediaStates.PREPARED
+      this.setState({ 
+        isPlaying: false,
+        // playerCurrentTimeAprox: 0
+      });
+    })
+
+    this.setState({ 
+      playerBusy: false, 
+      duration: this.player.duration,
+      playerCurrentTimeAprox: 0
+    });
+
+    this.currentTimeInterval = setInterval(() => {
+      this.updatePlayerCurrentTimeText();
+    }, 50)
+
+    //this.updatePlayerCurrentTimeText();
+  }
+
+  updatePlayerCurrentTimeText() {
+    if (!this.player || !this.canLoadPlayer()) return;
+
+    // Get data from Player.currentTime and update state for visual components (slider and current time text)
+    if (Math.abs(this.player.currentTime - this.state.playerCurrentTimeAprox) > 50) { // No need to update every time
+      this.setState({
+        playerCurrentTimeAprox: this.player.currentTime,
+      });
+    }
+  }
+
+  async togglePlayer() {
+    if (!this.player || this.state.playerBusy) return;
+    this.setState({ playerBusy: true });
+    
+    const isPaused = await new Promise((resolve, reject) => {
+      this.player.playPause((err, paused) => { 
+        err ? reject(err) : resolve(paused) 
+      });
+    })
+    .catch(err => {
+      console.error('Error toggling player:', err);
+    });
+
+    this.setState({ playerBusy: false, isPlaying: !isPaused });
+  }
+
+  async seekPlayer(position) {
+    if (!this.player) return;
+    this.setState({ playerBusy: true });
+
+    position = Math.floor(position); // Slider returns decimal numbers
+
+    await new Promise((reject, resolve) => {
+      this.player.seek(position, err => { err ? reject(err) : resolve(err) });
+    })
+    .catch(err => {
+      console.error('Error seeking current playing media:', err);
+    });
+    console.log('test')
+
+    this.setState({ playerBusy: false });
+
+    //this.updatePlayerCurrentTimeText();
+  }
+
+  async pausePlayer() {
+    if (!this.player) return;
+    this.setState({ playerBusy: true });
+
+    await new Promise((resolve, reject) => {
+      this.player.pause(resolve);
+    });
+
+    this.setState({ playerBusy: false });
+  }
+
+  getPlayerTime() {
+    return this.player ? this.player.duration : 0;
+  }
 
   async selectFile() { // Android only
     // Request permission to select file
@@ -234,6 +388,9 @@ export default class App extends Component {
       convertInBackend: this.requiresToConvertInBackend(fileFormat)
     });
     console.info('Selected file URI:', this.state.fileFullPath);
+
+    // Load selected audio into player
+    await this.loadPlayer();
   }
 
   async toggleVoiceRecording() {
@@ -349,14 +506,20 @@ export default class App extends Component {
         console.info('Moving file\n from:', this.state.fileFullPath, '\n to:', fileExternalFullPath);
         await RNFS.moveFile(this.state.fileFullPath, fileExternalFullPath);
         this.setState({ fileFullPath: fileExternalFullPath });
-        Alert.alert('Recording saved', `Audio file saved at\n"${fileExternalFullPath.replace(RNFS.ExternalStorageDirectoryPath + '/', '')}".\n\nYou can now send the audio to be converted to text`);
+        // Alert.alert('Recording saved', `Audio file saved at\n"${fileExternalFullPath.replace(RNFS.ExternalStorageDirectoryPath + '/', '')}".\n\nYou can now send the audio to be converted to text`);
       } catch (err) {
         console.error('Error while moving temp file:', err);
         Alert.alert('Error while moving file', err);
       }
     }
 
-    this.setState({ isRecording: false, convertInBackend: this.requiresToConvertInBackend(this.state.format) });
+    this.setState({ 
+      isRecording: false, 
+      convertInBackend: this.requiresToConvertInBackend(this.state.format) 
+    });
+
+    // Load recorded audio into Player
+    await this.loadPlayer();
   }
 
   requiresToConvertInBackend(format) {
@@ -373,12 +536,12 @@ export default class App extends Component {
   }
 
   // https://stackoverflow.com/a/61335543/11138267
-  // secondsToTime(e){
-  //   var h = Math.floor(e / 3600).toString().padStart(2,'0'),
-  //       m = Math.floor(e % 3600 / 60).toString().padStart(2,'0'),
-  //       s = Math.floor(e % 60).toString().padStart(2,'0');
-  //   return h + ':' + m + ':' + s;
-  // }
+  secondsToTime(e){
+    var h = Math.floor(e / 3600).toString().padStart(2,'0'),
+        m = Math.floor(e % 3600 / 60).toString().padStart(2,'0'),
+        s = Math.floor(e % 60).toString().padStart(2,'0');
+    return h + ':' + m + ':' + s;
+  }
 
   render() {
     return (
@@ -395,7 +558,7 @@ export default class App extends Component {
                 <View style={styles.sourceView}>
                   { this.isAndroid ? (
                     <View style={styles.sourceButtonContainer}>
-                      <Icon.Button name='file-audio-o' backgroundColor={Color.S} style={styles.sourceButton} color='black' onPress={this.selectFile.bind(this)} 
+                      <Icon.Button name='file-audio-o' backgroundColor={Color.S} style={styles.sourceButton} color='black' onPress={this.selectFile.bind(this)}
                         disabled={this.state.isRecording || this.state.recorderBusy} >
                         <Text style={styles.buttonText}>Select file</Text>
                       </Icon.Button>
@@ -414,9 +577,21 @@ export default class App extends Component {
                   </View>
                 </View>
 
-                <View style={styles.sourceView}>
-
-                </View>
+                { this.player ? (
+                  <View style={[styles.sourceView, { paddingVertical: 10, borderRadius: 15, backgroundColor: this.state.playerBusy ? Color.P_DARK : 'transparent' }]}>
+                    <Icon name={this.state.isPlaying ? 'pause' : 'play' } size={18} style={{ marginRight: 10 }} 
+                      onPress={this.togglePlayer.bind(this)}/>
+                    <Text>{this.secondsToTime(Math.floor(Math.max(this.state.playerCurrentTimeAprox, 0) / 1000))}</Text>
+                    <Slider
+                      style={{ minWidth: 200, flex: 0.8}}
+                      minimumValue={0}
+                      maximumValue={this.player.duration}
+                      value={this.player.currentTime}
+                      disabled={this.state.playerBusy}
+                      onSlidingComplete={this.seekPlayer.bind(this)}
+                    />
+                  </View>
+                ) : null}
 
                 <Text style={styles.sectionTitle}>File metadata and options</Text>
                 <View style={styles.optionsView}>
@@ -449,6 +624,12 @@ export default class App extends Component {
                         ))
                       }
                     </Picker>
+                  </View>
+                  <View style={styles.optionContainer}>
+                    <Text style={styles.label}>Duration</Text>
+                    { this.state.duration ? (
+                      <Text numberOfLines={2} style={styles.textValue}>{`${Math.ceil(this.state.duration / 1000)}s (${this.state.duration}ms)`}</Text>
+                    ) : null }
                   </View>
                 </View>
 
