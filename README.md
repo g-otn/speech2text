@@ -2,7 +2,7 @@
 Speech to text POC/test app made with React Native made mainly to test Google Cloud Speech-to-Text API.
 
 ## Running
-Requirements: [React Native CLI environment](https://reactnative.dev/docs/environment-setup#native)
+Requirements: [React Native CLI environment](https://reactnative.dev/docs/environment-setup)
 
 1. Clone and navigate to the project:
 ```bash
