@@ -74,7 +74,7 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    this.connectWithBackend();
+    // this.connectWithBackend();
   }
 
   componentWillUnmount() {
